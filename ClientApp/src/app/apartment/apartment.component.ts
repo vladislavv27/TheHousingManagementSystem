@@ -4,9 +4,11 @@ import { Resident } from './../Models/resident.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HomesApiService } from '../Services/homes-api.service';
 import { FormGroup, NgModelGroup } from '@angular/forms';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Component, OnInit, Inject } from '@angular/core';
-import { ResdidentDetailComponent } from '../resdident-detail/resdident-detail.component';
+import { ResdidentDetailComponent } from '../ModalLogs/resdident-detail/resdident-detail.component';
+import { ApartmentEditComponent } from '../ModalLogs/apartment-edit/apartment-edit.component';
+import { DeleteConfirmationModalComponent } from '../ModalLogs/delete-confirmation-modal/delete-confirmation-modal.component';
 
 
 @Component({
@@ -60,23 +62,14 @@ export class ApartmentComponent implements OnInit  {
   getApartmentDetails(apartmentId: number) {
     return this.houseService.GetApartmentById(apartmentId);
   }
-  updateApartment(){
-    this.houseService.UpdateApartment(this.apartmentdetails.id,this.apartmentdetails).subscribe({
-      next:(response)=>{
-        this.router.navigate(['house/'+this.apartmentdetails.houseId])
-      }
-    })
-  }
+
 
   getApartmentsResidents(Apartmentid: number) {
     this.houseService.GetApartmentsResident(Apartmentid).subscribe(
       (residents: Resident[]) => {
         this.residents = residents;
-        console.log(residents);
       },
-      (error) => {
-        console.error('Error fetching apartments:', error);
-      }
+  
     );
   }
   deleteApartment(Apartmentid: number){
@@ -86,18 +79,36 @@ export class ApartmentComponent implements OnInit  {
       }
     })
   }
-  addApartment(apartment:Apartment){
-    console.log(apartment);
-    this.houseService.CreateApartment(this.apartmentdetails).subscribe({
-      next:(apartment)=>{
-        console.log(apartment);
-        this.router.navigate(['house/'+this.apartmentdetails.houseId])
-      }
-    })
+  hasResidents(apartmentId:number): boolean {
+    return this.getApartmentsResidents(apartmentId)==null;
+    
+  }
+
+
+   async Delete(Apartmentid: number) {
+    const result = this.openConfirmationModal();
+    if (await result) {
+      this.deleteApartment(Apartmentid)
+    } else {
+    }
+  }
+
+  openConfirmationModal(): Promise<boolean> {
+    const modalRef: NgbModalRef = this.modalService.open(DeleteConfirmationModalComponent);
+
+    return modalRef.result.then((result) => {
+      return result === true;
+    }).catch(() => {
+      return false;
+    });
   }
   openEditModal(residentId: number) {
     const modalRef = this.modalService.open(ResdidentDetailComponent);
     modalRef.componentInstance.residentId = residentId;
+  }
+  openEditModalEditApartment(apartmentId: number) {
+    const modalRef = this.modalService.open(ApartmentEditComponent);
+    modalRef.componentInstance.apartmentId = apartmentId;
   }
 
   }

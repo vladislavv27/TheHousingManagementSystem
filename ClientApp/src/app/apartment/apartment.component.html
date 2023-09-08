@@ -1,52 +1,15 @@
 
   
 <div class="container">
-  <h2>Apartment</h2>
+  <h2>Apartment:{{apartmentdetails.number}}</h2>
   <div class="">
-   
+    <button class="btn btn-info" (click)="openEditModalEditApartment(apartmentdetails.id)">Edit</button>
+    <button class="btn btn-danger"  (click)="Delete(apartmentdetails.id)">Delete</button>
+    <button class="btn btn-warning" *ngIf="!(residents !== null && residents !== undefined && residents.length > 0)" (click)="(openEditModal(apartmentdetails.id))">Add Resident</button>
 
-    <form #form="ngForm">
-      <div class="form-group row ">
-      <div class="col-sm-3 ">
-        <label for="id" class="form-label">Id</label>
-        <input type="number" class="form-control form-control-sm" id="id" name="id" [(ngModel)]="apartmentdetails.id">
-      </div>
-      <div class="col-sm-3 ">
-        <label for="number" class="form-label">Number</label>
-        <input type="number" class="form-control form-control-sm" id="number" name="number" [(ngModel)]="apartmentdetails.number">
-      </div>
-      <div class="col-sm-3 ">
-        <label for="floor" class="form-label">Floor</label>
-        <input type="number" class="form-control form-control-sm" id="floor" name="floor" [(ngModel)]="apartmentdetails.floor">
-      </div>
-      <div class="col-sm-3 ">
-        <label for="numberOfRooms" class="form-label">Number of Rooms</label>
-        <input type="number" class="form-control form-control-sm" id="numberOfRooms" name="numberOfRooms" [(ngModel)]="apartmentdetails.numberOfRooms">
-      </div>
-      <div class="col-sm-3 ">
-        <label for="population" class="form-label">Population</label>
-        <input type="number" class="form-control form-control-sm" id="population" name="population" [(ngModel)]="apartmentdetails.population">
-      </div>
-      <div class="col-sm-3 ">
-        <label for="fullArea" class="form-label">Full Area</label>
-        <input type="number" class="form-control form-control-sm" id="fullArea" name="fullArea" [(ngModel)]="apartmentdetails.fullArea">
-      </div>
-      <div class="col-sm-3 ">
-        <label for="livingSpace" class="form-label">Living Space</label>
-        <input type="number" class="form-control form-control-sm" id="livingSpace" name="livingSpace" [(ngModel)]="apartmentdetails.livingSpace">
-      </div>
-      <div class="col-sm-3 ">
-        <label for="houseId" class="form-label">houseId</label>
-        <input type="number" class="form-control form-control-sm" id="houseId" name="houseId" [(ngModel)]="apartmentdetails.houseId">
-      </div>
-      <div class="row-sm-3">
-        <button class="btn btn-warning" (click)="updateApartment()">Save</button>
-        <button class="btn btn-danger" (click)="deleteApartment(apartmentdetails.id)">Delete</button>
-        <button class="btn btn-info" (click)="addApartment(apartmentdetails)">Create</button>
-
-      </div>
-    </div>
-    </form>
+    
+    
+    
     
   </div>
 
@@ -58,6 +21,8 @@
     </table>
   
     <h2>Residents</h2>
+   
+    
     <table class="table">
       <thead>
         <tr>
@@ -85,7 +50,7 @@
           <td>{{ resident.isOwner ? 'Yes' : 'No' }}</td>
           <td>{{ resident.apartmentId }}</td>
           <td>
-            <button class="btn btn-success" (click)="(openEditModal(resident.id))">Edit</button>
+            <button class="btn btn-info" (click)="(openEditModal(resident.id))">Edit</button>
           </td>
         </tr>
       </tbody>

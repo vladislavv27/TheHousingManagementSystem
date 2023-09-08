@@ -2,7 +2,7 @@ import { Resident } from './../Models/resident.model';
 import { Apartment } from './../Models/apartment.model';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import { House } from '../Models/house.model';
 @Injectable({
   providedIn: 'root', // Or specify a module if needed
@@ -64,9 +64,16 @@ export class HomesApiService {
     residentcreate.id=0;
     return this.http.post<Resident>(this.apiUrl+'/residents',residentcreate);
   }
-  doesHouseExistByNumber(numberToCheck: number): Observable<boolean> {
-    return this.getAllHouses().pipe(
-      map((houses: any[]) => houses.some(house => house.number === numberToCheck))
-    );}
-  
+  doesHouseExistByNumber(houseNumber: number): Observable<boolean> {
+    return this.getAllHouses().pipe(map((houses) => houses.some((house) => house.number === houseNumber))
+    );
+  }
+  doesApartmentExistByNumber(apartmentNumber: number,houseId:number): Observable<boolean> {
+    return this.GetHouseApartments(houseId).pipe(map((apartment) => apartment.some((apartment) => apartment.number === apartmentNumber))
+    );
+  }
+  doesResidentExistByNumber(personalcode: string,apartmentNumber:number): Observable<boolean> {
+    return this.GetApartmentsResident(apartmentNumber).pipe(map((resdident) => resdident.some((resdident) => resdident.personalCode === personalcode))
+    );
+  }
 }

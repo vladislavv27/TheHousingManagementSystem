@@ -1,6 +1,8 @@
 <div class="container">
   <h2>House number: {{ housedetails.number }}</h2>
   <button class="btn btn-info" (click)="openEditModal(housedetails.id)">Edit</button>
+  <button class="btn btn-danger" (click)="Delete(housedetails.id)">Delete</button>
+  <button class="btn btn-warning" *ngIf="!(apartments !== null && apartments !== undefined && apartments.length > 0)" (click)="(openEditModalEditApartment(housedetails.id))">Add Apartment</button>
 
 <br>
 
@@ -34,7 +36,7 @@
           <td>{{ apartment.fullArea }}</td>
           <td>{{ apartment.livingSpace }}</td>
           <!-- Use [routerLink] to navigate to residents of the specific apartment -->
-          <td><a class="btn btn-success" [routerLink]="['/apartments', apartment.id, 'residents']">View</a></td>
+          <td><a class="btn btn-info" [routerLink]="['/apartments', apartment.id, 'residents']">View</a></td>
         </tr>
       </tbody>
     </table>

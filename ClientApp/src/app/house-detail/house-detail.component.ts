@@ -6,8 +6,10 @@ import { Apartment } from '../Models/apartment.model';
 import { Injectable } from '@angular/core';
 import { AuthorizeService } from 'src/api-authorization/authorize.service';
 import jwtDecode from 'jwt-decode';
-import { HouseEditComponent } from '../house-edit/house-edit.component';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { HouseEditComponent } from '../ModalLogs/house-edit/house-edit.component';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { DeleteConfirmationModalComponent } from '../ModalLogs/delete-confirmation-modal/delete-confirmation-modal.component';
+import { ApartmentEditComponent } from '../ModalLogs/apartment-edit/apartment-edit.component';
 @Injectable({
   providedIn: 'root',
 })
@@ -77,8 +79,36 @@ export class HouseDetailComponent implements OnInit {
       }
     );
   }
-  
-  
+   
+  deleteHouse(houseId: number){
+    this.houseService.DeleteHouse(houseId).subscribe({
+      next:(response)=>{
+        this.router.navigate(['all-houses'])
+      }
+    })
+
+  }
+   async Delete(houseId: number) {
+    const result = this.openConfirmationModal();
+    if (await result) {
+      this.deleteHouse(houseId)
+    } else {
+    }
+  }
+
+  openConfirmationModal(): Promise<boolean> {
+    const modalRef: NgbModalRef = this.modalService.open(DeleteConfirmationModalComponent);
+
+    return modalRef.result.then((result) => {
+      return result === true;
+    }).catch(() => {
+      return false;
+    });
+  }
+  openEditModalEditApartment(apartmentId: number) {
+    const modalRef = this.modalService.open(ApartmentEditComponent);
+    modalRef.componentInstance.apartmentId = apartmentId;
+  }
   manager(): void {
     this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
       if (userRole !== null) {

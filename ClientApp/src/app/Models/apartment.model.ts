@@ -1,4 +1,5 @@
 export interface Apartment {
+    [x: string]: any;
     id: number;
     number: number;
     floor: number;
