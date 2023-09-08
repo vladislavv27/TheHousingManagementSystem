@@ -1,0 +1,26 @@
+<div class="container">
+    <h2>All Houses</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Number</th>
+          <th>Street</th>
+          <th>City</th>
+          <th>Country</th>
+          <th>Postcode</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let house of houses">
+          <td>{{ house.number }}</td>
+          <td>{{ house.street }}</td>
+          <td>{{ house.city }}</td>
+          <td>{{ house.country }}</td>
+          <td>{{ house.postcode }}</td>
+          <td><a class="btn btn-success" [routerLink]="['/house', house.id]">View</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

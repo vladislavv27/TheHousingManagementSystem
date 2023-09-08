@@ -1,0 +1,41 @@
+<div class="container">
+  <h2>House number: {{ housedetails.number }}</h2>
+  <button class="btn btn-info" (click)="openEditModal(housedetails.id)">Edit</button>
+
+<br>
+
+
+</div>
+
+
+
+<div class="container">
+    <h2>All Apartments</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Number</th>
+          <th>Floor</th>
+          <th>Number of Rooms</th>
+          <th>Population</th>
+          <th>Full Area</th>
+          <th>Living Space</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let apartment of apartments">
+          <td>{{ apartment.id }}</td>
+          <td>{{ apartment.number }}</td>
+          <td>{{ apartment.floor }}</td>
+          <td>{{ apartment.numberOfRooms }}</td>
+          <td>{{ apartment.population }}</td>
+          <td>{{ apartment.fullArea }}</td>
+          <td>{{ apartment.livingSpace }}</td>
+          <!-- Use [routerLink] to navigate to residents of the specific apartment -->
+          <td><a class="btn btn-success" [routerLink]="['/apartments', apartment.id, 'residents']">View</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
