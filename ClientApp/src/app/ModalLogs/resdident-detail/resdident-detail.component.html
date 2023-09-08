@@ -39,8 +39,8 @@
             <label for="apartmentId" class="form-label">apartmentId</label>
         <input type="number" class="form-control form-control-sm" id="apartmentId" name="apartmentId" [(ngModel)]="residentdetails.apartmentId">
           </div>
-        <button type="submit" class="btn btn-info"  (click)="checkAndUpdateHouse(residentdetails)">Save</button>
-        <button class="btn btn-danger" (click)="Delete(residentdetails.id)">Delete</button>
+        <button type="submit" class="btn btn-info" (click)="checkAndUpdateHouse(residentdetails)">Save</button>
+        <button class="btn btn-danger"  [disabled]="!(isManager)" (click)="Delete(residentdetails.id)">Delete</button>
         <button class="btn btn-danger"(click)="closeModalAndRefresh()">Cancel</button>
       </form>
     </div>

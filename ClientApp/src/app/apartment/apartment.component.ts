@@ -8,7 +8,7 @@ import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstra
 import { Component, OnInit, Inject } from '@angular/core';
 import { ResdidentDetailComponent } from '../ModalLogs/resdident-detail/resdident-detail.component';
 import { ApartmentEditComponent } from '../ModalLogs/apartment-edit/apartment-edit.component';
-import { AuthorizeService } from 'src/api-authorization/authorize.service';
+import { AuthorizeService, IUser } from 'src/api-authorization/authorize.service';
 import jwtDecode from 'jwt-decode';
 
 
@@ -31,6 +31,7 @@ export class ApartmentComponent implements OnInit  {
   selectedResident: Resident | undefined;
   showEditModal: boolean | undefined;
   apartmentForm: FormGroup | undefined; 
+  currentUser: any;
   apartmentdetails:Apartment={
     id: 0,
     number: 0,
@@ -59,7 +60,12 @@ export class ApartmentComponent implements OnInit  {
         }
       });
       this.getApartmentsResidents(this.apartmentId);
-    
+     
+    });
+    this.AuthorizeService.getUser().subscribe(data => {
+      if (data && data.name) {
+        this.currentUser = data.name;
+      }
     });
   }
 

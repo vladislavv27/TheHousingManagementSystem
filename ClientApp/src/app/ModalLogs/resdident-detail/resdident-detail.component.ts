@@ -4,6 +4,8 @@ import { NgbActiveModal, NgbModal, NgbModalRef, NgbModule } from '@ng-bootstrap/
 import { ActivatedRoute, Router } from '@angular/router';
 import { HomesApiService } from '../../Services/homes-api.service';
 import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
+import { AuthorizeService } from 'src/api-authorization/authorize.service';
+import jwtDecode from 'jwt-decode';
 
 @Component({
   selector: 'app-resdident-detail',
@@ -16,6 +18,8 @@ export class ResdidentDetailComponent {
   residents: Resident[] =[]; 
   showEditModal: boolean = false;
   modalRef!: NgbModalRef;
+  isManager: boolean = false;
+  isResident: boolean = false;
   residentdetails:Resident={
     id: 0,
     name: '',
@@ -35,9 +39,12 @@ export class ResdidentDetailComponent {
     private router: Router,
     private modalService: NgbModal,
     private houseService: HomesApiService,
+    private AuthorizeService: AuthorizeService,
+
   ) {}
 
   ngOnInit(): void {
+    this.manager();
     if (this.residentId) {
       this.getResidentDetails(this.residentId).subscribe({
         next: (response: Resident) => {
@@ -60,12 +67,13 @@ export class ResdidentDetailComponent {
     const houseNumberToCheck = resdident.personalCode;
     this.houseService.doesResidentExistByNumber(houseNumberToCheck,resdident.apartmentId).subscribe((exists) => {
       if (exists) {
+        console.log(this.isManager)
         this.houseService.UpdateResident(this.residentdetails.id, this.residentdetails).subscribe({
           next: (response) => {
             this.closeModalAndRefresh();
           }
         });
-      } else {
+      } else if(!exists&&this.isManager){
         this.houseService.CreateResident(this.residentdetails).subscribe({
           next: (createdHouse) => {
             this.closeModalAndRefresh();
@@ -102,15 +110,24 @@ export class ResdidentDetailComponent {
     });
   }
 
-
-
   closeModalAndRefresh() {
     this.activeModal.close();
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
     this.router.navigate(['apartments/'+this.residentdetails.apartmentId+'/residents']))
   }
 
-  
-
-
+  manager(): void {
+    this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
+      if (userRole !== null) {
+        const token: any = jwtDecode(userRole);
+        const role = token.role;
+        
+        this.isManager = role === 'Manager';
+        this.isResident = role === 'Resident';
+      } else {
+        this.isManager = false;
+        this.isResident = false;
+      }
+    });
+  }
 }

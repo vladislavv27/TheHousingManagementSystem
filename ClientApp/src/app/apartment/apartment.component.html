@@ -39,7 +39,7 @@
           <td>{{ resident.isOwner ? 'Yes' : 'No' }}</td>
           <td>{{ resident.apartmentId }}</td>
           <td>
-            <button class="btn btn-info" [disabled]="!isManager" (click)="(openEditModal(resident.id))">Edit</button>
+            <button class="btn btn-info" [disabled]="!(isManager || resident.email === currentUser)" (click)="openEditModal(resident.id)">Edit</button>
           </td>
         </tr>
       </tbody>
