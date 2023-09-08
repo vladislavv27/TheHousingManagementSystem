@@ -1,19 +1,19 @@
 <div class="container">
-<div class="row">
-  <div class="col-sm-6">
-    <h2>House number: {{ housedetails.number }}</h2>
+  <div class="row">
+    <div class="col-sm-6">
+      <h2>House number: {{ housedetails.number }}</h2>
+    </div>
+    <div class="col-sm-6">
+      <select class="form-select" size="1" [(ngModel)]="selectedHouse" (change)="onSelected(selectedHouse)">
+        <option *ngFor="let house of housesselector" [value]="house.id">{{ house.number }}</option>
+      </select>
+    </div>
   </div>
-  <div class="col-sm-6">
-    <select class="form-select" size="1" [(ngModel)]="selectedHouse" (change)="onSelected(selectedHouse)">
-      <option *ngFor="let house of housesselector" [value]="house.id">{{ house.number }}</option>
-    </select>
-  </div>
-</div>
 
-  
-  
 
-<div class="container">
+
+
+  <div class="container">
     <h2>All Apartments</h2>
     <table class="table">
       <thead>
@@ -40,11 +40,14 @@
           <td>{{ apartment.livingSpace }}</td>
           <!-- Use [routerLink] to navigate to residents of the specific apartment -->
           <td><a class="btn btn-info" [routerLink]="['/apartments', apartment.id, 'residents']">View</a></td>
-          <td><button class="btn btn-success" [disabled]="!isManager"  (click)="openEditModalEditApartment(apartment.id)">Edit</button></td>
+          <td><button class="btn btn-success" [disabled]="!isManager"
+              (click)="openEditModalEditApartment(apartment.id)">Edit</button></td>
         </tr>
       </tbody>
     </table>
   </div>
-<div class="row-sm-3">
-  <button class="btn btn-warning col-sm-12" [disabled]="!isManager" *ngIf="!(apartments !== null && apartments !== undefined && apartments.length > 0)" (click)="(openEditModalEditApartment(housedetails.id))">Add Apartment</button>
-</div>
+  <div class="row-sm-3">
+    <button class="btn btn-warning col-sm-12" [disabled]="!isManager"
+      *ngIf="!(apartments !== null && apartments !== undefined && apartments.length > 0)"
+      (click)="(openEditModalEditApartment(housedetails.id))">Add Apartment</button>
+  </div>

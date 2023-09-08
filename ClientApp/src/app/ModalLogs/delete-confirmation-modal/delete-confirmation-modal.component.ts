@@ -9,17 +9,17 @@ import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class DeleteConfirmationModalComponent {
 
-  constructor(    
-    public modalService:NgbModal,
-    private router:Router, 
+  constructor(
+    public modalService: NgbModal,
+    private router: Router,
     public activeModal: NgbActiveModal,
-) {}
+  ) { }
 
-confirm() {
-  this.activeModal.close(true); 
-}
+  confirm() {
+    this.activeModal.close(true);
+  }
 
-cancel() {
-  this.activeModal.close(false);
-}
+  cancel() {
+    this.activeModal.close(false);
+  }
 }

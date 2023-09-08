@@ -1,8 +1,8 @@
 import { House } from './../Models/house.model';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { HomesApiService } from '..//Services/homes-api.service'; 
-import { Apartment } from '../Models/apartment.model'; 
+import { HomesApiService } from '..//Services/homes-api.service';
+import { Apartment } from '../Models/apartment.model';
 import { Injectable } from '@angular/core';
 import { AuthorizeService } from 'src/api-authorization/authorize.service';
 import jwtDecode from 'jwt-decode';
@@ -25,11 +25,11 @@ export class HouseDetailComponent implements OnInit {
   isResident: boolean = false;
   apartmentId: number | undefined;
   house: House | undefined;
-  apartments: Apartment[]| undefined;
+  apartments: Apartment[] | undefined;
   showEditForm: boolean | undefined;
-  selectedHouse: number=0;
+  selectedHouse: number = 0;
   housesselector: House[] = [];
-  housedetails:House={
+  housedetails: House = {
     id: 0,
     number: 0,
     street: '',
@@ -37,11 +37,11 @@ export class HouseDetailComponent implements OnInit {
     country: '',
     postcode: '',
   }
-  
+
   constructor(
-    public modalService:NgbModal,
+    public modalService: NgbModal,
     private route: ActivatedRoute,
-    private router:Router, 
+    private router: Router,
     private houseService: HomesApiService,
     private AuthorizeService: AuthorizeService,
 
@@ -55,34 +55,32 @@ export class HouseDetailComponent implements OnInit {
       })
     ).subscribe((response: House) => {
       this.housedetails = response;
-    
+
       if (this.houseId !== undefined) {
         this.getApartmentsByHouseId(this.houseId);
       }
     });
     this.getHousesSelectorData();
   }
-  navigateToApartmentResidents(apartmentId: number) {
-   console.log(apartmentId);
-  }
+
   private getHousesSelectorData() {
 
     this.houseService.getAllHouses().subscribe((data: House[]) => {
       this.housesselector = data;
     });
   }
-  onSelected(selectedHouse:number){
-    this.router.navigate(['house',selectedHouse]);
+  onSelected(selectedHouse: number) {
+    this.router.navigate(['house', selectedHouse]);
   }
   getHouseDetails(houseId: number) {
     return this.houseService.getHouseById(houseId);
   }
-  
+
   openEditModal(houseId: number) {
     const modalRef = this.modalService.open(HouseEditComponent);
     modalRef.componentInstance.houseId = houseId;
   }
-  
+
   getApartmentsByHouseId(houseId: number) {
     this.houseService.GetHouseApartments(houseId).subscribe(
       (apartments: Apartment[]) => {
@@ -104,7 +102,7 @@ export class HouseDetailComponent implements OnInit {
       if (userRole !== null) {
         const token: any = jwtDecode(userRole);
         const role = token.role;
-        
+
         this.isManager = role === 'Manager';
         this.isResident = role === 'Resident';
       } else {

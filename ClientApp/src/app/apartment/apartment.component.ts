@@ -3,8 +3,8 @@ import { Apartment } from './../Models/apartment.model';
 import { Resident } from './../Models/resident.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HomesApiService } from '../Services/homes-api.service';
-import { FormGroup, NgModelGroup } from '@angular/forms';
-import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { FormGroup } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Component, OnInit, Inject } from '@angular/core';
 import { ResdidentDetailComponent } from '../ModalLogs/resdident-detail/resdident-detail.component';
 import { ApartmentEditComponent } from '../ModalLogs/apartment-edit/apartment-edit.component';
@@ -21,18 +21,18 @@ import jwtDecode from 'jwt-decode';
 
 
 
-export class ApartmentComponent implements OnInit  {
+export class ApartmentComponent implements OnInit {
   apartmentId: number | undefined;
   isManager: boolean = false;
   isResident: boolean = false;
-  apartments: Apartment| undefined;
+  apartments: Apartment | undefined;
   showEditForm: boolean | undefined;
-  residents: Resident[] = []; 
+  residents: Resident[] = [];
   selectedResident: Resident | undefined;
   showEditModal: boolean | undefined;
-  apartmentForm: FormGroup | undefined; 
+  apartmentForm: FormGroup | undefined;
   currentUser: any;
-  apartmentdetails:Apartment={
+  apartmentdetails: Apartment = {
     id: 0,
     number: 0,
     floor: 0,
@@ -43,24 +43,24 @@ export class ApartmentComponent implements OnInit  {
     houseId: 0
   }
   constructor(
-    public modalService:NgbModal,
+    public modalService: NgbModal,
     private houseService: HomesApiService,
     private route: ActivatedRoute,
-    private router:Router,
+    private router: Router,
     private AuthorizeService: AuthorizeService,
   ) { }
-  
+
   ngOnInit() {
     this.manager();
     this.route.params.subscribe(params => {
-      this.apartmentId = +params['id']; 
+      this.apartmentId = +params['id'];
       this.getApartmentDetails(this.apartmentId).subscribe({
         next: (response: Apartment) => {
           this.apartmentdetails = response;
         }
       });
       this.getApartmentsResidents(this.apartmentId);
-     
+
     });
     this.AuthorizeService.getUser().subscribe(data => {
       if (data && data.name) {
@@ -79,7 +79,7 @@ export class ApartmentComponent implements OnInit  {
       (residents: Resident[]) => {
         this.residents = residents;
       },
-  
+
     );
   }
 
@@ -96,7 +96,7 @@ export class ApartmentComponent implements OnInit  {
       if (userRole !== null) {
         const token: any = jwtDecode(userRole);
         const role = token.role;
-        
+
         this.isManager = role === 'Manager';
         this.isResident = role === 'Resident';
       } else {
@@ -106,4 +106,4 @@ export class ApartmentComponent implements OnInit  {
     });
   }
 
-  }
+}

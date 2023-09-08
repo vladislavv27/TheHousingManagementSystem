@@ -1,35 +1,36 @@
 <div class="container">
-    <h2>All Houses</h2>
-    <div class="form-group">
-      <label for="citySearch">Search by Street:</label>
-      <input type="text" [(ngModel)]="filterValue" (input)="onFilterInputChange()">
-    </div>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Number</th>
-          <th>Street</th>
-          <th>City</th>
-          <th>Country</th>
-          <th>Postcode</th>
-          <th>Edit</th>
-          <th>View</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let house of filteredHouses">
-          <td>{{ house.number }}</td>
-          <td>{{ house.street }}</td>
-          <td>{{ house.city }}</td>
-          <td>{{ house.country }}</td>
-          <td>{{ house.postcode }}</td>
-          <td><a class="btn btn-info" [routerLink]="['/house', house.id]">View</a></td>
-          <td><button class="btn btn-success" [disabled]="!isManager"(click)="(openEditModalEditHouse(house.id))">Edit House</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="row-sm-3">
-      <button class="btn btn-warning col-sm-12" [disabled]="!isManager" (click)="(openEditModalEditHouse(0))">Add House</button>
-    </div>
+  <h2>All Houses</h2>
+  <div class="form-group">
+    <label for="citySearch">Search by Street:</label>
+    <input type="text" [(ngModel)]="filterValue" (input)="onFilterInputChange()">
   </div>
-
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Number</th>
+        <th>Street</th>
+        <th>City</th>
+        <th>Country</th>
+        <th>Postcode</th>
+        <th>Edit</th>
+        <th>View</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let house of filteredHouses">
+        <td>{{ house.number }}</td>
+        <td>{{ house.street }}</td>
+        <td>{{ house.city }}</td>
+        <td>{{ house.country }}</td>
+        <td>{{ house.postcode }}</td>
+        <td><a class="btn btn-info" [routerLink]="['/house', house.id]">View</a></td>
+        <td><button class="btn btn-success" [disabled]="!isManager" (click)="(openEditModalEditHouse(house.id))">Edit
+            House</button></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="row-sm-3">
+    <button class="btn btn-warning col-sm-12" [disabled]="!isManager" (click)="(openEditModalEditHouse(0))">Add
+      House</button>
+  </div>
+</div>

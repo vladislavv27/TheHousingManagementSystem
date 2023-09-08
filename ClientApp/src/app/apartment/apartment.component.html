@@ -1,50 +1,47 @@
-
-  
 <div class="container">
   <h2>Apartment:{{apartmentdetails.number}}</h2>
   <div class="">
-    <button class="btn btn-warning" *ngIf="!(residents !== null && residents !== undefined && residents.length > 0)" (click)="(openEditModal(apartmentdetails.id))">Add Resident</button>
+    <button class="btn btn-warning" *ngIf="!(residents !== null && residents !== undefined && residents.length > 0)"
+      (click)="(openEditModal(apartmentdetails.id))">Add Resident</button>
   </div>
 
 
 </div>
 <div class="container">
-    <table class="table">
-    </table>
-    <h2>Residents</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Surname</th>
-          <th>Personal Code</th>
-          <th>Date of Birth</th>
-          <th>Phone</th>
-          <th>Email</th>
-          <th>Is Owner</th>
-          <th>Apartment ID</th>
-          <th>Edit</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let resident of residents">
-          <td>{{ resident.id }}</td>
-          <td>{{ resident.name }}</td>
-          <td>{{ resident.surname }}</td>
-          <td>{{ resident.personalCode }}</td>
-          <td>{{ resident.dateOfBirth | date }}</td>
-          <td>{{ resident.phone }}</td>
-          <td>{{ resident.email }}</td>
-          <td>{{ resident.isOwner ? 'Yes' : 'No' }}</td>
-          <td>{{ resident.apartmentId }}</td>
-          <td>
-            <button class="btn btn-info" [disabled]="!(isManager || resident.email === currentUser)" (click)="openEditModal(resident.id)">Edit</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  
-  
-  
+  <table class="table">
+  </table>
+  <h2>Residents</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Surname</th>
+        <th>Personal Code</th>
+        <th>Date of Birth</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Is Owner</th>
+        <th>Apartment ID</th>
+        <th>Edit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let resident of residents">
+        <td>{{ resident.id }}</td>
+        <td>{{ resident.name }}</td>
+        <td>{{ resident.surname }}</td>
+        <td>{{ resident.personalCode }}</td>
+        <td>{{ resident.dateOfBirth | date }}</td>
+        <td>{{ resident.phone }}</td>
+        <td>{{ resident.email }}</td>
+        <td>{{ resident.isOwner ? 'Yes' : 'No' }}</td>
+        <td>{{ resident.apartmentId }}</td>
+        <td>
+          <button class="btn btn-success" [disabled]="!(isManager || resident.email === currentUser)"
+            (click)="openEditModal(resident.id)">Edit</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

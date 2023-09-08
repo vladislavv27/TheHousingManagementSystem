@@ -14,13 +14,13 @@ import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/d
 })
 export class ApartmentEditComponent {
   apartmentId: number | undefined;
-  apartments: Apartment| undefined;
+  apartments: Apartment | undefined;
   showEditForm: boolean | undefined;
-  residents: Resident[] = []; 
+  residents: Resident[] = [];
   selectedResident: Resident | undefined;
   showEditModal: boolean | undefined;
-  apartmentForm: FormGroup | undefined; 
-  apartmentdetails:Apartment={
+  apartmentForm: FormGroup | undefined;
+  apartmentdetails: Apartment = {
     id: 0,
     number: 0,
     floor: 0,
@@ -32,13 +32,13 @@ export class ApartmentEditComponent {
   }
   constructor(
     public activeModal: NgbActiveModal,
-    public modalService:NgbModal,
+    public modalService: NgbModal,
     private houseService: HomesApiService,
     private route: ActivatedRoute,
-    private router:Router,
+    private router: Router,
 
   ) { }
-  
+
   ngOnInit(): void {
     if (this.apartmentId) {
       this.getApartmentDetails(this.apartmentId).subscribe({
@@ -55,23 +55,23 @@ export class ApartmentEditComponent {
 
   checkAndUpdateApartment(apartment: Apartment) {
     const ApartmentNumberToCheck = apartment.number;
-    this.houseService.doesApartmentExistByNumber(ApartmentNumberToCheck,apartment.houseId).subscribe((exists) => {
+    this.houseService.doesApartmentExistByNumber(ApartmentNumberToCheck, apartment.houseId).subscribe((exists) => {
       if (exists) {
         this.houseService.UpdateApartment(this.apartmentdetails.id, this.apartmentdetails).subscribe({
           next: (response) => {
-            this.router.navigate(['house/'+this.apartmentdetails.houseId]);
+            this.router.navigate(['house/' + this.apartmentdetails.houseId]);
           }
         });
         this.closeModalAndRefresh();
       } else {
         this.houseService.CreateApartment(this.apartmentdetails).subscribe({
           next: () => {
-            this.router.navigate(['house/'+this.apartmentdetails.houseId]);
+            this.router.navigate(['house/' + this.apartmentdetails.houseId]);
           }
         });
         this.closeModalAndRefresh();
       }
-  
+
       this.closeModalAndRefresh();
     });
   }
@@ -80,10 +80,10 @@ export class ApartmentEditComponent {
     this.activeModal.close();
     location.reload();
   }
-  deleteApartment(Apartmentid: number){
+  deleteApartment(Apartmentid: number) {
     this.houseService.DeleteApartment(Apartmentid).subscribe({
-      next:(response)=>{
-        this.router.navigate(['house/'+this.apartmentdetails.houseId])
+      next: (response) => {
+        this.router.navigate(['house/' + this.apartmentdetails.houseId])
       }
     })
     this.closeModalAndRefresh();
@@ -91,7 +91,7 @@ export class ApartmentEditComponent {
 
 
 
-   async Delete(Apartmentid: number) {
+  async Delete(Apartmentid: number) {
     const result = this.openConfirmationModal();
     if (await result) {
       this.deleteApartment(Apartmentid)
@@ -108,6 +108,6 @@ export class ApartmentEditComponent {
       return false;
     });
   }
-  }
+}
 
 

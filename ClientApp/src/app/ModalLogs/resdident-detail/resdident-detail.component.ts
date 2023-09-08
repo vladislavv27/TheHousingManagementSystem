@@ -13,19 +13,19 @@ import jwtDecode from 'jwt-decode';
   styleUrls: ['./resdident-detail.component.css']
 })
 export class ResdidentDetailComponent {
-  
+
   @Input() residentId: number | undefined;
-  residents: Resident[] =[]; 
+  residents: Resident[] = [];
   showEditModal: boolean = false;
   modalRef!: NgbModalRef;
   isManager: boolean = false;
   isResident: boolean = false;
-  residentdetails:Resident={
+  residentdetails: Resident = {
     id: 0,
     name: '',
     surname: '',
     personalCode: '',
-    dateOfBirth: new Date(2000,0,1),
+    dateOfBirth: new Date(2000, 0, 1),
     phone: '',
     email: '',
     isOwner: false,
@@ -34,14 +34,14 @@ export class ResdidentDetailComponent {
   public closeEvent: EventEmitter<string> = new EventEmitter();
 
   constructor(
-    
+
     public activeModal: NgbActiveModal,
     private router: Router,
     private modalService: NgbModal,
     private houseService: HomesApiService,
     private AuthorizeService: AuthorizeService,
 
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.manager();
@@ -52,50 +52,44 @@ export class ResdidentDetailComponent {
         }
       });
     };
-    
+
   }
   getResidentDetails(residentId: number) {
-    console.log(residentId)
     return this.houseService.GetResidentById(residentId);
   }
 
-
-
-
-  
   checkAndUpdateHouse(resdident: Resident) {
     const houseNumberToCheck = resdident.personalCode;
-    this.houseService.doesResidentExistByNumber(houseNumberToCheck,resdident.apartmentId).subscribe((exists) => {
+    this.houseService.doesResidentExistByNumber(houseNumberToCheck, resdident.apartmentId).subscribe((exists) => {
       if (exists) {
-        console.log(this.isManager)
         this.houseService.UpdateResident(this.residentdetails.id, this.residentdetails).subscribe({
           next: (response) => {
             this.closeModalAndRefresh();
           }
         });
-      } else if(!exists&&this.isManager){
+      } else if (!exists && this.isManager) {
         this.houseService.CreateResident(this.residentdetails).subscribe({
           next: (createdHouse) => {
             this.closeModalAndRefresh();
           }
         });
       }
-  
+
       this.closeModalAndRefresh();
     });
   }
 
 
-   async Delete(resdidentid: number) {
+  async Delete(resdidentid: number) {
     const result = this.openConfirmationModal();
     if (await result) {
       this.deleteResident(resdidentid)
     } else {
     }
   }
-  deleteResident(residentId: number){
+  deleteResident(residentId: number) {
     this.houseService.DeleteResident(residentId).subscribe({
-      next:(response)=>{
+      next: (response) => {
         this.closeModalAndRefresh();
       }
     })
@@ -113,7 +107,7 @@ export class ResdidentDetailComponent {
   closeModalAndRefresh() {
     this.activeModal.close();
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
-    this.router.navigate(['apartments/'+this.residentdetails.apartmentId+'/residents']))
+      this.router.navigate(['apartments/' + this.residentdetails.apartmentId + '/residents']))
   }
 
   manager(): void {
@@ -121,7 +115,7 @@ export class ResdidentDetailComponent {
       if (userRole !== null) {
         const token: any = jwtDecode(userRole);
         const role = token.role;
-        
+
         this.isManager = role === 'Manager';
         this.isResident = role === 'Resident';
       } else {

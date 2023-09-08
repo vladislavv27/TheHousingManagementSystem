@@ -25,7 +25,7 @@ export class HouseEditComponent implements OnInit {
   isResident: boolean = false;
   house: House | undefined;
   showEditForm: boolean | undefined;
-  housedetails:House={
+  housedetails: House = {
     id: 0,
     number: 0,
     street: '',
@@ -36,15 +36,15 @@ export class HouseEditComponent implements OnInit {
   public closeEvent: EventEmitter<string> = new EventEmitter();
 
   constructor(
-    public modalService:NgbModal,
+    public modalService: NgbModal,
     private route: ActivatedRoute,
-    private router:Router, 
+    private router: Router,
     private houseService: HomesApiService,
     public activeModal: NgbActiveModal,
-    
+
 
   ) { }
-  
+
   ngOnInit(): void {
     if (this.houseId) {
       this.getHouseDetails(this.houseId).subscribe({
@@ -53,22 +53,22 @@ export class HouseEditComponent implements OnInit {
         }
       });
     };
-    
+
   }
   getHouseDetails(houseId: number) {
     return this.houseService.getHouseById(houseId);
   }
-  
-  deleteHouse(houseId: number){
+
+  deleteHouse(houseId: number) {
     this.houseService.DeleteHouse(houseId).subscribe({
-      next:(response)=>{
+      next: (response) => {
         this.router.navigate(['all-houses'])
         this.closeModalAndRefresh();
       }
     })
 
   }
-   async Delete(houseId: number) {
+  async Delete(houseId: number) {
     const result = this.openConfirmationModal();
     if (await result) {
       this.deleteHouse(houseId)
@@ -86,7 +86,7 @@ export class HouseEditComponent implements OnInit {
     });
   }
 
-  
+
   checkAndUpdateHouse(house: House) {
     const houseNumberToCheck = house.number;
     this.houseService.doesHouseExistByNumber(houseNumberToCheck).subscribe((exists) => {
@@ -104,7 +104,7 @@ export class HouseEditComponent implements OnInit {
           }
         });
       }
-  
+
       this.closeModalAndRefresh();
     });
   }

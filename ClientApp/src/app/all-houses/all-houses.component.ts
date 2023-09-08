@@ -5,7 +5,7 @@ import { HouseEditComponent } from '../ModalLogs/house-edit/house-edit.component
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthorizeService } from 'src/api-authorization/authorize.service';
 import jwtDecode from 'jwt-decode';
-import { Subject, debounceTime } from 'rxjs';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-all-houses',
@@ -13,37 +13,35 @@ import { Subject, debounceTime } from 'rxjs';
   styleUrls: ['./all-houses.component.css']
 })
 export class AllHousesComponent {
-  filteredHouses: House[] = []; 
+  filteredHouses: House[] = [];
   filterValue = '';
-    houses: House[]=[];
+  houses: House[] = [];
   isManager: boolean = false;
   isResident: boolean = false;
-  private debounceTimer: any; 
-
   filterInput$: Subject<string> = new Subject<string>();
 
-    constructor(private houseService: HomesApiService,
-    public modalService:NgbModal,
+  constructor(private houseService: HomesApiService,
+    public modalService: NgbModal,
     private AuthorizeService: AuthorizeService,
 
   ) { }
   ngOnInit(): void {
     this.manager();
     this.getHouses();
-      this.filterInput$.subscribe((filterValue) => {
-        if (!filterValue.trim()) {
-          this.filteredHouses = this.houses;
-        } else {
-          this.filteredHouses = this.houses.filter((house) =>
-            house.street.toLowerCase().includes(filterValue.toLowerCase())
-          );
-        }
-      });
+    this.filterInput$.subscribe((filterValue) => {
+      if (!filterValue.trim()) {
+        this.filteredHouses = this.houses;
+      } else {
+        this.filteredHouses = this.houses.filter((house) =>
+          house.street.toLowerCase().includes(filterValue.toLowerCase())
+        );
+      }
+    });
   }
   onFilterInputChange() {
     this.filterInput$.next(this.filterValue);
   }
-  
+
   applyFilter() {
     if (this.filterValue.trim() === '') {
       this.houses = this.houses;
@@ -56,9 +54,9 @@ export class AllHousesComponent {
   getHouses() {
     this.houseService.getAllHouses().subscribe((data: House[]) => {
       this.houses = data;
-      this.filteredHouses = data; // Initialize filteredHouses with all houses
+      this.filteredHouses = data;
     });
-  
+
   }
   openEditModalEditHouse(houseId: number) {
     const modalRef = this.modalService.open(HouseEditComponent);
@@ -69,7 +67,7 @@ export class AllHousesComponent {
       if (userRole !== null) {
         const token: any = jwtDecode(userRole);
         const role = token.role;
-        
+
         this.isManager = role === 'Manager';
         this.isResident = role === 'Resident';
       } else {
