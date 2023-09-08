@@ -45,7 +45,7 @@ export class ApartmentComponent implements OnInit  {
     private router:Router,
   ) { }
   
-  ngOnInit(): void {
+  ngOnInit() {
     
     this.route.params.subscribe(params => {
       this.apartmentId = +params['id']; 
@@ -72,36 +72,7 @@ export class ApartmentComponent implements OnInit  {
   
     );
   }
-  deleteApartment(Apartmentid: number){
-    this.houseService.DeleteApartment(Apartmentid).subscribe({
-      next:(response)=>{
-        this.router.navigate(['house/'+this.apartmentdetails.houseId])
-      }
-    })
-  }
-  hasResidents(apartmentId:number): boolean {
-    return this.getApartmentsResidents(apartmentId)==null;
-    
-  }
 
-
-   async Delete(Apartmentid: number) {
-    const result = this.openConfirmationModal();
-    if (await result) {
-      this.deleteApartment(Apartmentid)
-    } else {
-    }
-  }
-
-  openConfirmationModal(): Promise<boolean> {
-    const modalRef: NgbModalRef = this.modalService.open(DeleteConfirmationModalComponent);
-
-    return modalRef.result.then((result) => {
-      return result === true;
-    }).catch(() => {
-      return false;
-    });
-  }
   openEditModal(residentId: number) {
     const modalRef = this.modalService.open(ResdidentDetailComponent);
     modalRef.componentInstance.residentId = residentId;

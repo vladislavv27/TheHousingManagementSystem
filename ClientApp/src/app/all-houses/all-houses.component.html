@@ -1,5 +1,6 @@
 <div class="container">
     <h2>All Houses</h2>
+
     <table class="table">
       <thead>
         <tr>
@@ -8,7 +9,8 @@
           <th>City</th>
           <th>Country</th>
           <th>Postcode</th>
-          <th>Actions</th>
+          <th>Edit</th>
+          <th>View</th>
         </tr>
       </thead>
       <tbody>
@@ -19,8 +21,12 @@
           <td>{{ house.country }}</td>
           <td>{{ house.postcode }}</td>
           <td><a class="btn btn-info" [routerLink]="['/house', house.id]">View</a></td>
+          <td><button class="btn btn-success "(click)="(openEditModalEditHouse(house.id))">Edit House</button></td>
         </tr>
       </tbody>
     </table>
+    <div class="row-sm-3">
+      <button class="btn btn-warning col-sm-12"(click)="(openEditModalEditHouse(0))">Add House</button>
+    </div>
   </div>
   

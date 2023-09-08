@@ -4,6 +4,7 @@ import { House } from '../../Models/house.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HomesApiService } from '../../Services/homes-api.service';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
 
 
 @Injectable({
@@ -58,7 +59,32 @@ export class HouseEditComponent implements OnInit {
     return this.houseService.getHouseById(houseId);
   }
   
+  deleteHouse(houseId: number){
+    this.houseService.DeleteHouse(houseId).subscribe({
+      next:(response)=>{
+        this.router.navigate(['all-houses'])
+        this.closeModalAndRefresh();
+      }
+    })
 
+  }
+   async Delete(houseId: number) {
+    const result = this.openConfirmationModal();
+    if (await result) {
+      this.deleteHouse(houseId)
+    } else {
+    }
+  }
+
+  openConfirmationModal(): Promise<boolean> {
+    const modalRef: NgbModalRef = this.modalService.open(DeleteConfirmationModalComponent);
+
+    return modalRef.result.then((result) => {
+      return result === true;
+    }).catch(() => {
+      return false;
+    });
+  }
 
   
   checkAndUpdateHouse(house: House) {
@@ -70,6 +96,7 @@ export class HouseEditComponent implements OnInit {
             this.router.navigate(['all-houses']);
           }
         });
+        this.closeModalAndRefresh();
       } else {
         this.houseService.CreateHouse(this.housedetails).subscribe({
           next: (createdHouse) => {
@@ -84,7 +111,7 @@ export class HouseEditComponent implements OnInit {
 
   closeModalAndRefresh() {
     this.activeModal.close();
- 
+    location.reload();
   }
 
 }

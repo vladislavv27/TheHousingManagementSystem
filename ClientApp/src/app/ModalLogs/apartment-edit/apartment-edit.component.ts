@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Apartment } from 'src/app/Models/apartment.model';
 import { Resident } from 'src/app/Models/resident.model';
 import { HomesApiService } from 'src/app/Services/homes-api.service';
+import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
 
 @Component({
   selector: 'app-apartment-edit',
@@ -35,6 +36,7 @@ export class ApartmentEditComponent {
     private houseService: HomesApiService,
     private route: ActivatedRoute,
     private router:Router,
+
   ) { }
   
   ngOnInit(): void {
@@ -67,6 +69,7 @@ export class ApartmentEditComponent {
             this.router.navigate(['house/'+this.apartmentdetails.houseId]);
           }
         });
+        this.closeModalAndRefresh();
       }
   
       this.closeModalAndRefresh();
@@ -75,7 +78,36 @@ export class ApartmentEditComponent {
 
   closeModalAndRefresh() {
     this.activeModal.close();
- 
+    location.reload();
+  }
+  deleteApartment(Apartmentid: number){
+    this.houseService.DeleteApartment(Apartmentid).subscribe({
+      next:(response)=>{
+        this.router.navigate(['house/'+this.apartmentdetails.houseId])
+      }
+    })
+    this.closeModalAndRefresh();
+  }
+
+
+
+   async Delete(Apartmentid: number) {
+    const result = this.openConfirmationModal();
+    if (await result) {
+      this.deleteApartment(Apartmentid)
+    } else {
+    }
+  }
+
+  openConfirmationModal(): Promise<boolean> {
+    const modalRef: NgbModalRef = this.modalService.open(DeleteConfirmationModalComponent);
+
+    return modalRef.result.then((result) => {
+      return result === true;
+    }).catch(() => {
+      return false;
+    });
   }
   }
+
 
