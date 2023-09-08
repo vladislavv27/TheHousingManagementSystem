@@ -22,8 +22,8 @@ import { switchMap } from 'rxjs';
 export class HouseDetailComponent implements OnInit {
   houseId: number | undefined;
   isManager: boolean = false;
-  apartmentId: number | undefined;
   isResident: boolean = false;
+  apartmentId: number | undefined;
   house: House | undefined;
   apartments: Apartment[]| undefined;
   showEditForm: boolean | undefined;

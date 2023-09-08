@@ -37,11 +37,11 @@
           <td>{{ apartment.livingSpace }}</td>
           <!-- Use [routerLink] to navigate to residents of the specific apartment -->
           <td><a class="btn btn-info" [routerLink]="['/apartments', apartment.id, 'residents']">View</a></td>
-          <td><button class="btn btn-success" (click)="openEditModalEditApartment(apartment.id)">Edit</button></td>
+          <td><button class="btn btn-success" [disabled]="!isManager"  (click)="openEditModalEditApartment(apartment.id)">Edit</button></td>
         </tr>
       </tbody>
     </table>
   </div>
 <div class="row-sm-3">
-  <button class="btn btn-warning col-sm-12" *ngIf="!(apartments !== null && apartments !== undefined && apartments.length > 0)" (click)="(openEditModalEditApartment(housedetails.id))">Add Apartment</button>
+  <button class="btn btn-warning col-sm-12" [disabled]="!isManager" *ngIf="!(apartments !== null && apartments !== undefined && apartments.length > 0)" (click)="(openEditModalEditApartment(housedetails.id))">Add Apartment</button>
 </div>

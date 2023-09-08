@@ -8,7 +8,8 @@ import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstra
 import { Component, OnInit, Inject } from '@angular/core';
 import { ResdidentDetailComponent } from '../ModalLogs/resdident-detail/resdident-detail.component';
 import { ApartmentEditComponent } from '../ModalLogs/apartment-edit/apartment-edit.component';
-import { DeleteConfirmationModalComponent } from '../ModalLogs/delete-confirmation-modal/delete-confirmation-modal.component';
+import { AuthorizeService } from 'src/api-authorization/authorize.service';
+import jwtDecode from 'jwt-decode';
 
 
 @Component({
@@ -22,6 +23,8 @@ import { DeleteConfirmationModalComponent } from '../ModalLogs/delete-confirmati
 
 export class ApartmentComponent implements OnInit  {
   apartmentId: number | undefined;
+  isManager: boolean = false;
+  isResident: boolean = false;
   apartments: Apartment| undefined;
   showEditForm: boolean | undefined;
   residents: Resident[] = []; 
@@ -43,10 +46,11 @@ export class ApartmentComponent implements OnInit  {
     private houseService: HomesApiService,
     private route: ActivatedRoute,
     private router:Router,
+    private AuthorizeService: AuthorizeService,
   ) { }
   
   ngOnInit() {
-    
+    this.manager();
     this.route.params.subscribe(params => {
       this.apartmentId = +params['id']; 
       this.getApartmentDetails(this.apartmentId).subscribe({
@@ -80,6 +84,20 @@ export class ApartmentComponent implements OnInit  {
   openEditModalEditApartment(apartmentId: number) {
     const modalRef = this.modalService.open(ApartmentEditComponent);
     modalRef.componentInstance.apartmentId = apartmentId;
+  }
+  manager(): void {
+    this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
+      if (userRole !== null) {
+        const token: any = jwtDecode(userRole);
+        const role = token.role;
+        
+        this.isManager = role === 'Manager';
+        this.isResident = role === 'Resident';
+      } else {
+        this.isManager = false;
+        this.isResident = false;
+      }
+    });
   }
 
   }
