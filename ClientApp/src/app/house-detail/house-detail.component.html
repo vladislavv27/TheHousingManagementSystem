@@ -1,15 +1,14 @@
 <div class="container">
-  <h2>House number: {{ housedetails.number }}</h2>
-  <button class="btn btn-info" (click)="openEditModal(housedetails.id)">Edit</button>
-  <button class="btn btn-danger" (click)="Delete(housedetails.id)">Delete</button>
-  <button class="btn btn-warning" *ngIf="!(apartments !== null && apartments !== undefined && apartments.length > 0)" (click)="(openEditModalEditApartment(housedetails.id))">Add Apartment</button>
-
-<br>
-
-
-</div>
-
-
+  <div class="row">
+    <div class="col-sm-6">
+      <h2>House number:{{housedetails.number}}</h2>
+      <select class="form-select" size="1" defa [(ngModel)]="selectedHouse"(change)="onSelected(selectedHouse)">
+        <option *ngFor="let house of housesselector" [value]="house.id">{{ house.number }}</option>
+      </select>
+    </div>
+  </div>
+  
+  
 
 <div class="container">
     <h2>All Apartments</h2>
@@ -23,7 +22,8 @@
           <th>Population</th>
           <th>Full Area</th>
           <th>Living Space</th>
-          <th>Actions</th>
+          <th>View</th>
+          <th>Edit</th>
         </tr>
       </thead>
       <tbody>
@@ -37,7 +37,11 @@
           <td>{{ apartment.livingSpace }}</td>
           <!-- Use [routerLink] to navigate to residents of the specific apartment -->
           <td><a class="btn btn-info" [routerLink]="['/apartments', apartment.id, 'residents']">View</a></td>
+          <td><button class="btn btn-success" (click)="openEditModalEditApartment(apartment.id)">Edit</button></td>
         </tr>
       </tbody>
     </table>
   </div>
+<div class="row-sm-3">
+  <button class="btn btn-warning col-sm-12" *ngIf="!(apartments !== null && apartments !== undefined && apartments.length > 0)" (click)="(openEditModalEditApartment(housedetails.id))">Add Apartment</button>
+</div>

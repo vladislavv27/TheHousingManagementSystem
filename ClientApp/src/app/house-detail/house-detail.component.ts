@@ -10,6 +10,7 @@ import { HouseEditComponent } from '../ModalLogs/house-edit/house-edit.component
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { DeleteConfirmationModalComponent } from '../ModalLogs/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ApartmentEditComponent } from '../ModalLogs/apartment-edit/apartment-edit.component';
+import { switchMap } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
@@ -26,6 +27,8 @@ export class HouseDetailComponent implements OnInit {
   house: House | undefined;
   apartments: Apartment[]| undefined;
   showEditForm: boolean | undefined;
+  selectedHouse: number=0;
+  housesselector: House[] = [];
   housedetails:House={
     id: 0,
     number: 0,
@@ -45,21 +48,32 @@ export class HouseDetailComponent implements OnInit {
   ) { }
   ngOnInit(): void {
     this.manager();
-    this.route.params.subscribe(params => {
-      this.houseId = +params['id']; 
-      this.getHouseDetails(this.houseId).subscribe({
-        next: (response: House) => {
-          this.housedetails = response;
-        }
-      });
-      this.getApartmentsByHouseId(this.houseId);
+    this.route.params.pipe(
+      switchMap(params => {
+        this.houseId = +params['id'];
+        return this.getHouseDetails(this.houseId || 0);
+      })
+    ).subscribe((response: House) => {
+      this.housedetails = response;
+    
+      if (this.houseId !== undefined) {
+        this.getApartmentsByHouseId(this.houseId);
+      }
     });
+    this.getHousesSelectorData();
   }
   navigateToApartmentResidents(apartmentId: number) {
    console.log(apartmentId);
   }
-  
-  
+  private getHousesSelectorData() {
+
+    this.houseService.getAllHouses().subscribe((data: House[]) => {
+      this.housesselector = data;
+    });
+  }
+  onSelected(selectedHouse:number){
+    this.router.navigate(['house',selectedHouse]);
+  }
   getHouseDetails(houseId: number) {
     return this.houseService.getHouseById(houseId);
   }
@@ -79,32 +93,8 @@ export class HouseDetailComponent implements OnInit {
       }
     );
   }
-   
-  deleteHouse(houseId: number){
-    this.houseService.DeleteHouse(houseId).subscribe({
-      next:(response)=>{
-        this.router.navigate(['all-houses'])
-      }
-    })
 
-  }
-   async Delete(houseId: number) {
-    const result = this.openConfirmationModal();
-    if (await result) {
-      this.deleteHouse(houseId)
-    } else {
-    }
-  }
 
-  openConfirmationModal(): Promise<boolean> {
-    const modalRef: NgbModalRef = this.modalService.open(DeleteConfirmationModalComponent);
-
-    return modalRef.result.then((result) => {
-      return result === true;
-    }).catch(() => {
-      return false;
-    });
-  }
   openEditModalEditApartment(apartmentId: number) {
     const modalRef = this.modalService.open(ApartmentEditComponent);
     modalRef.componentInstance.apartmentId = apartmentId;
