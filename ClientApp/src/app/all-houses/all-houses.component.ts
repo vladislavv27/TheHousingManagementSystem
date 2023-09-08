@@ -5,6 +5,7 @@ import { HouseEditComponent } from '../ModalLogs/house-edit/house-edit.component
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthorizeService } from 'src/api-authorization/authorize.service';
 import jwtDecode from 'jwt-decode';
+import { Subject, debounceTime } from 'rxjs';
 
 @Component({
   selector: 'app-all-houses',
@@ -12,11 +13,14 @@ import jwtDecode from 'jwt-decode';
   styleUrls: ['./all-houses.component.css']
 })
 export class AllHousesComponent {
-  
-
-  houses: House[]=[];
+  filteredHouses: House[] = []; 
+  filterValue = '';
+    houses: House[]=[];
   isManager: boolean = false;
   isResident: boolean = false;
+  private debounceTimer: any; 
+
+  filterInput$: Subject<string> = new Subject<string>();
 
     constructor(private houseService: HomesApiService,
     public modalService:NgbModal,
@@ -26,15 +30,35 @@ export class AllHousesComponent {
   ngOnInit(): void {
     this.manager();
     this.getHouses();
+      this.filterInput$.subscribe((filterValue) => {
+        if (!filterValue.trim()) {
+          this.filteredHouses = this.houses;
+        } else {
+          this.filteredHouses = this.houses.filter((house) =>
+            house.street.toLowerCase().includes(filterValue.toLowerCase())
+          );
+        }
+      });
   }
-
+  onFilterInputChange() {
+    this.filterInput$.next(this.filterValue);
+  }
+  
+  applyFilter() {
+    if (this.filterValue.trim() === '') {
+      this.houses = this.houses;
+    } else {
+      this.houses = this.houses.filter((house) =>
+        house.street.toLowerCase().includes(this.filterValue.toLowerCase())
+      );
+    }
+  }
   getHouses() {
-    this.houseService.getAllHouses().subscribe(
-      (houses: House[]) => {
-        this.houses = houses;
-        console.log(this.houses); 
-      }
-    );
+    this.houseService.getAllHouses().subscribe((data: House[]) => {
+      this.houses = data;
+      this.filteredHouses = data; // Initialize filteredHouses with all houses
+    });
+  
   }
   openEditModalEditHouse(houseId: number) {
     const modalRef = this.modalService.open(HouseEditComponent);
