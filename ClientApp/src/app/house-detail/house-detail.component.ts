@@ -6,7 +6,6 @@ import { Apartment } from '../Models/apartment.model';
 import { Injectable } from '@angular/core';
 import { AuthorizeService } from 'src/api-authorization/authorize.service';
 import jwtDecode from 'jwt-decode';
-import { HouseEditComponent } from '../ModalLogs/house-edit/house-edit.component';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { DeleteConfirmationModalComponent } from '../ModalLogs/delete-confirmation-modal/delete-confirmation-modal.component';
 import { switchMap } from 'rxjs';
