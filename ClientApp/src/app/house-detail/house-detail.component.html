@@ -4,7 +4,7 @@
       <h2>House number: {{ housedetails.number }}</h2>
     </div>
     <div class="col-sm-6">
-      <select class="form-select" size="1" [(ngModel)]="selectedHouse" (change)="onSelected(selectedHouse)">
+      <select class="form-select"  size="1" [(ngModel)]="selectedHouse" (change)="onSelected(selectedHouse)">
         <option *ngFor="let house of housesselector" [value]="house.id">{{ house.number }}</option>
       </select>
     </div>

@@ -29,7 +29,8 @@ export class ApartmentEditComponent {
     fullArea: 0,
     livingSpace: 0,
     houseId: 0
-  }
+  };
+
   constructor(
     public activeModal: NgbActiveModal,
     public modalService: NgbModal,
