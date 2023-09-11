@@ -1,8 +1,9 @@
 <div class="container">
   <h2>Apartment:{{apartmentdetails.number}}</h2>
   <div class="">
-    <button class="btn btn-warning" *ngIf="!(residents !== null && residents !== undefined && residents.length > 0)"
-     >Add Resident</button>
+    <button class="btn btn-warning" *ngIf="!(residents !== null && residents !== undefined && residents.length > 0)" (click)="openEditModal(apartmentdetails.id)">Add Resident</button>
+
+
   </div>
 
 

@@ -6,11 +6,11 @@ import { HomesApiService } from '../Services/homes-api.service';
 import { FormGroup } from '@angular/forms';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ApartmentEditComponent } from '../ModalLogs/apartment-edit/apartment-edit.component';
 import { AuthorizeService, IUser } from 'src/api-authorization/authorize.service';
 import jwtDecode from 'jwt-decode';
 import { DeleteConfirmationModalComponent } from '../ModalLogs/delete-confirmation-modal/delete-confirmation-modal.component';
 import { Observable, map } from 'rxjs';
+import { HouseDetailComponent } from '../house-detail/house-detail.component';
 
 
 @Component({
@@ -79,7 +79,6 @@ export class ApartmentComponent implements OnInit {
   getApartments() {
     this.houseService.getAllApartments().subscribe((data: Apartment[]) => {
       this.apartments = data; 
-      console.log(this.apartments)
     });
   }
 
@@ -112,7 +111,7 @@ export class ApartmentComponent implements OnInit {
 
   }
   openEditModalEditApartment(apartmentId: number) {
-    const modalRef = this.modalService.open(ApartmentEditComponent);
+    const modalRef = this.modalService.open(HouseDetailComponent);
     modalRef.componentInstance.apartmentId = apartmentId;
   }
   manager(): void {

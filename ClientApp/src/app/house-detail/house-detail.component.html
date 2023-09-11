@@ -41,7 +41,7 @@
           <!-- Use [routerLink] to navigate to residents of the specific apartment -->
           <td><a class="btn btn-info" [routerLink]="['/apartments', apartment.id, 'residents']">View</a></td>
           <td><button class="btn btn-success" [disabled]="!isManager"
-              (click)="openEditModalEditApartment(apartment.id)">Edit</button></td>
+              (click)="openEditModal(apartment.id)">Edit</button></td>
         </tr>
       </tbody>
     </table>
@@ -49,5 +49,51 @@
   <div class="row-sm-3">
     <button class="btn btn-warning col-sm-12" [disabled]="!isManager"
       *ngIf="!(apartments !== null && apartments !== undefined && apartments.length > 0)"
-      (click)="(openEditModalEditApartment(housedetails.id))">Add Apartment</button>
+      (click)="(openEditModal(housedetails.id))">Add Apartment</button>
   </div>
+
+  <ng-template #editModal>
+    <h2>Apartmemt Details</h2>
+    <form #form="ngForm">
+      <div class="form-group row ">
+      <div class="sm-3 ">
+        <label for="id" class="form-label">Id</label>
+        <input type="number" class="form-control form-control-sm" id="id" name="id" [(ngModel)]="apartmentdetails.id">
+      </div>
+      <div class="sm-3 ">
+        <label for="number" class="form-label">Number</label>
+        <input type="number" class="form-control form-control-sm" id="number" name="number" [(ngModel)]="apartmentdetails.number">
+      </div>
+      <div class="sm-3 ">
+        <label for="floor" class="form-label">Floor</label>
+        <input type="number" class="form-control form-control-sm" id="floor" name="floor" [(ngModel)]="apartmentdetails.floor">
+      </div>
+      <div class="sm-3 ">
+        <label for="numberOfRooms" class="form-label">Number of Rooms</label>
+        <input type="number" class="form-control form-control-sm" id="numberOfRooms" name="numberOfRooms" [(ngModel)]="apartmentdetails.numberOfRooms">
+      </div>
+      <div class="sm-3 ">
+        <label for="population" class="form-label">Population</label>
+        <input type="number" class="form-control form-control-sm" id="population" name="population" [(ngModel)]="apartmentdetails.population">
+      </div>
+      <div class="sm-3 ">
+        <label for="fullArea" class="form-label">Full Area</label>
+        <input type="number" class="form-control form-control-sm" id="fullArea" name="fullArea" [(ngModel)]="apartmentdetails.fullArea">
+      </div>
+      <div class="sm-3 ">
+        <label for="livingSpace" class="form-label">Living Space</label>
+        <input type="number" class="form-control form-control-sm" id="livingSpace" name="livingSpace" [(ngModel)]="apartmentdetails.livingSpace">
+      </div>
+      <div class="sm-3 ">
+        <label for="houseId" class="form-label">houseId</label>
+        <input type="number" class="form-control form-control-sm" id="houseId" name="houseId" [(ngModel)]="apartmentdetails.houseId">
+      </div>
+      <div class="row-sm-3">
+             
+        <button type="submit" class="btn btn-info" (click)="checkAndUpdateApartment(apartmentdetails)">Save</button>
+        <button class="btn btn-danger"  [disabled]="!(isManager)" (click)="Delete(apartmentdetails.id)">Delete</button>
+        <button class="btn btn-warning"(click)="closeModalAndRefresh()">Cancel</button>
+      </div>
+    </div>
+    </form>
+  </ng-template>

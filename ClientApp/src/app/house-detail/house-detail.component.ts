@@ -1,5 +1,5 @@
 import { House } from './../Models/house.model';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { HomesApiService } from '..//Services/homes-api.service';
 import { Apartment } from '../Models/apartment.model';
@@ -9,7 +9,6 @@ import jwtDecode from 'jwt-decode';
 import { HouseEditComponent } from '../ModalLogs/house-edit/house-edit.component';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { DeleteConfirmationModalComponent } from '../ModalLogs/delete-confirmation-modal/delete-confirmation-modal.component';
-import { ApartmentEditComponent } from '../ModalLogs/apartment-edit/apartment-edit.component';
 import { switchMap } from 'rxjs';
 @Injectable({
   providedIn: 'root',
@@ -20,13 +19,14 @@ import { switchMap } from 'rxjs';
   styleUrls: ['./house-detail.component.css']
 })
 export class HouseDetailComponent implements OnInit {
-  houseId: number | undefined;
+  @ViewChild('editModal') editModal!: ElementRef;
+  houseId!: number;
+  activeModals: NgbModalRef[] = [];
   isManager: boolean = false;
   isResident: boolean = false;
-  apartmentId: number | undefined;
-  house: House | undefined;
-  apartments: Apartment[] | undefined;
-  showEditForm: boolean | undefined;
+  apartmentId!: number;
+  house!: House;
+  apartments!: Apartment[];
   selectedHouse: number = 0;
   housesselector: House[] = [];
   housedetails: House = {
@@ -36,7 +36,17 @@ export class HouseDetailComponent implements OnInit {
     city: '',
     country: '',
     postcode: '',
-  }
+  };
+  apartmentdetails: Apartment = {
+    id: 0,
+    number: 0,
+    floor: 0,
+    numberOfRooms: 0,
+    population: 0,
+    fullArea: 0,
+    livingSpace: 0,
+    houseId: 0
+  };
 
   constructor(
     public modalService: NgbModal,
@@ -61,8 +71,17 @@ export class HouseDetailComponent implements OnInit {
       }
     });
     this.getHousesSelectorData();
+    if (this.apartmentId) {
+      this.getApartmentDetails(this.apartmentId).subscribe({
+        next: (response: Apartment) => {
+          this.apartmentdetails = response;
+        }
+      });
+    };
   }
-
+  getApartmentDetails(apartmentId: number) {
+    return this.houseService.GetApartmentById(apartmentId);
+  }
   private getHousesSelectorData() {
 
     this.houseService.getAllHouses().subscribe((data: House[]) => {
@@ -76,9 +95,18 @@ export class HouseDetailComponent implements OnInit {
     return this.houseService.getHouseById(houseId);
   }
 
-  openEditModal(houseId: number) {
-    const modalRef = this.modalService.open(HouseEditComponent);
-    modalRef.componentInstance.houseId = houseId;
+
+  openEditModal(apartmentId: number) {
+    this.apartmentId = apartmentId;
+    const modalRef = this.modalService.open(this.editModal);
+    this.activeModals.push(modalRef);
+   
+    this.getApartmentDetails(this.apartmentId).subscribe({
+     next: (response: Apartment) => {
+       this.apartmentdetails = response;
+     }
+   });
+
   }
 
   getApartmentsByHouseId(houseId: number) {
@@ -92,11 +120,6 @@ export class HouseDetailComponent implements OnInit {
     );
   }
 
-
-  openEditModalEditApartment(apartmentId: number) {
-    const modalRef = this.modalService.open(ApartmentEditComponent);
-    modalRef.componentInstance.apartmentId = apartmentId;
-  }
   manager(): void {
     this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
       if (userRole !== null) {
@@ -110,6 +133,57 @@ export class HouseDetailComponent implements OnInit {
         this.isResident = false;
       }
     });
+  }
+  checkAndUpdateApartment(apartment: Apartment) {
+    const houseNumberToCheck = apartment.number;
+    this.houseService.doesApartmentExistByNumber(houseNumberToCheck, apartment.houseId).subscribe((exists) => {
+      if (exists) {
+        console.log(exists)
+        this.houseService.UpdateApartment(this.apartmentdetails.id, this.apartmentdetails).subscribe(() => {
+        });
+      } else if (!exists && this.isManager) {
+        this.houseService.CreateApartment(this.apartmentdetails).subscribe(() => {
+        });
+      }
+    });
+    this.closeModalAndRefresh();
+
+  }
+
+
+  async Delete(apartmentId: number) {
+    const result = this.openConfirmationModal();
+    if (await result) {
+      this.deletApartment(this.apartmentId)
+    } else {
+    }
+  }
+  deletApartment(apartmentId: number) {
+    this.houseService.DeleteApartment(apartmentId).subscribe({
+      next: (response) => {
+        this.closeModalAndRefresh();
+      }
+    })
+  }
+  openConfirmationModal(): Promise<boolean> {
+    const modalRef: NgbModalRef = this.modalService.open(DeleteConfirmationModalComponent);
+    this.activeModals.push(modalRef);
+
+
+    return modalRef.result.then((result) => {
+      return result === true;
+    }).catch(() => {
+      return false;
+    });
+  }
+  closeModalAndRefresh() {
+    this.activeModals.forEach(modalRef => {
+      modalRef.dismiss();
+      console.log(modalRef)
+    });
+    this.activeModals = [];
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
+      this.router.navigate(['house/' + this.apartmentdetails.houseId]))
   }
 
 

@@ -14,7 +14,6 @@ import { HouseDetailComponent } from './house-detail/house-detail.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HouseEditComponent } from './ModalLogs/house-edit/house-edit.component';
-import { ApartmentEditComponent } from './ModalLogs/apartment-edit/apartment-edit.component';
 import { DeleteConfirmationModalComponent } from './ModalLogs/delete-confirmation-modal/delete-confirmation-modal.component';
 
 
@@ -27,7 +26,6 @@ import { DeleteConfirmationModalComponent } from './ModalLogs/delete-confirmatio
     NavMenuComponent,
     HomeComponent,
     HouseEditComponent,
-    ApartmentEditComponent,
     DeleteConfirmationModalComponent
     
   
