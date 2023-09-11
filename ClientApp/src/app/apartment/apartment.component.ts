@@ -22,15 +22,15 @@ import jwtDecode from 'jwt-decode';
 
 
 export class ApartmentComponent implements OnInit {
-  apartmentId: number | undefined;
+  apartmentId!: number;
   isManager: boolean = false;
   isResident: boolean = false;
-  apartments: Apartment | undefined;
-  showEditForm: boolean | undefined;
+  apartments!: Apartment ;
+  showEditForm!: boolean;
   residents: Resident[] = [];
-  selectedResident: Resident | undefined;
-  showEditModal: boolean | undefined;
-  apartmentForm: FormGroup | undefined;
+  selectedResident!: Resident;
+  showEditModal!: boolean;
+  apartmentForm!: FormGroup;
   currentUser: any;
   apartmentdetails: Apartment = {
     id: 0,

@@ -20,6 +20,9 @@ export class HomesApiService {
   getHouseById(id: number): Observable<House> {
     return this.http.get<House>(`${this.apiUrl}/houses/${id}`);
   }
+  getAllApartments(): Observable<Apartment> {
+    return this.http.get<Apartment>(`${this.apiUrl}/apartments`);
+  }
   
   GetHouseApartments(houseId: number): Observable<Apartment[]> {
     return this.http.get<Apartment[]>(`${this.apiUrl}/houses/${houseId}/apartments`);

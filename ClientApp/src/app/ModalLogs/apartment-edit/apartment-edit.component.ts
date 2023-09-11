@@ -13,13 +13,13 @@ import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/d
   styleUrls: ['./apartment-edit.component.css']
 })
 export class ApartmentEditComponent {
-  apartmentId: number | undefined;
-  apartments: Apartment | undefined;
-  showEditForm: boolean | undefined;
+  apartmentId!: number;
+  apartments!: Apartment;
+  showEditForm!: boolean;
   residents: Resident[] = [];
-  selectedResident: Resident | undefined;
-  showEditModal: boolean | undefined;
-  apartmentForm: FormGroup | undefined;
+  selectedResident!: Resident | undefined;
+  showEditModal!: boolean;
+  apartmentForm!: FormGroup;
   apartmentdetails: Apartment = {
     id: 0,
     number: 0,

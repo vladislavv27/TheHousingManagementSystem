@@ -3,7 +3,7 @@
     class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"
   >
     <div class="container">
-      <a class="navbar-brand" [routerLink]="['/']">HomeDb</a>
+      <a class="navbar-brand" [routerLink]="['/']">Resident data management panel</a>
       <button
         class="navbar-toggler"
         type="button"
@@ -20,17 +20,9 @@
         [ngClass]="{ show: isExpanded }"
       >
         <ul class="navbar-nav flex-grow">
-          <li
-            class="nav-item"
-            [routerLinkActive]="['link-active']"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
-            <a class="nav-link text-dark" [routerLink]="['/']">Main page</a>
-          </li>
+      
           <li class="nav-item" >
-            <a class="nav-link text-dark" [routerLink]="['/all-houses']"
-              >Houses</a
-            >
+            <a class="nav-link text-dark" [routerLink]="['/all-houses']">Main page</a>
           </li>
         </ul>
         <app-login-menu></app-login-menu>

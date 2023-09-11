@@ -7,7 +7,7 @@ import { HomeComponent } from './home/home.component';
 import { AuthorizeGuard } from 'src/api-authorization/authorize.guard';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent, pathMatch: 'full' },
+  { path: '', component: AllHousesComponent, pathMatch: 'full' },
   { path:'all-houses',component:AllHousesComponent,canActivate: [AuthorizeGuard]},  
   { path: 'house/:id', component: HouseDetailComponent ,canActivate: [AuthorizeGuard],},
   { path: 'apartments/:id/residents', component: ApartmentComponent,canActivate: [AuthorizeGuard]},

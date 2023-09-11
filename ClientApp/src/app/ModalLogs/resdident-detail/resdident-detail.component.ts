@@ -6,6 +6,7 @@ import { HomesApiService } from '../../Services/homes-api.service';
 import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
 import { AuthorizeService } from 'src/api-authorization/authorize.service';
 import jwtDecode from 'jwt-decode';
+import { Apartment } from 'src/app/Models/apartment.model';
 
 @Component({
   selector: 'app-resdident-detail',
@@ -14,11 +15,13 @@ import jwtDecode from 'jwt-decode';
 })
 export class ResdidentDetailComponent {
 
-  @Input() residentId: number | undefined;
+  @Input() 
+  residentId!: number;
   residents: Resident[] = [];
-  showEditModal: boolean = false;
+  showEditModal!: boolean;
   modalRef!: NgbModalRef;
   isManager: boolean = false;
+  apartment:Apartment[]=[];
   isResident: boolean = false;
   residentdetails: Resident = {
     id: 0,
@@ -52,12 +55,13 @@ export class ResdidentDetailComponent {
         }
       });
     };
+ 
 
   }
   getResidentDetails(residentId: number) {
     return this.houseService.GetResidentById(residentId);
   }
-
+  
   checkAndUpdateHouse(resdident: Resident) {
     const houseNumberToCheck = resdident.personalCode;
     this.houseService.doesResidentExistByNumber(houseNumberToCheck, resdident.apartmentId).subscribe((exists) => {

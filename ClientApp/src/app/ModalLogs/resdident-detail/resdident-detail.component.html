@@ -37,8 +37,13 @@
         </div>
         <div class="mb-3 form-check">
             <label for="apartmentId" class="form-label">apartmentId</label>
-        <input type="number" class="form-control form-control-sm" id="apartmentId" name="apartmentId" [(ngModel)]="residentdetails.apartmentId">
+            <select name="residentdetails.apartmentId" class="form-select" size="1" [(ngModel)]="residentdetails.apartmentId">
+              <option *ngFor="let resident of residents" [value]="resident.apartmentId">{{ resident.apartmentId }}</option>
+            </select>
+                      
           </div>
+          <input type="number" class="form-control form-control-sm" id="apartmentId" name="apartmentId" [(ngModel)]="residentdetails.apartmentId">
+
         <button type="submit" class="btn btn-info" (click)="checkAndUpdateHouse(residentdetails)">Save</button>
         <button class="btn btn-danger"  [disabled]="!(isManager)" (click)="Delete(residentdetails.id)">Delete</button>
         <button class="btn btn-warning"(click)="closeModalAndRefresh()">Cancel</button>
