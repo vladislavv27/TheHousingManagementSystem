@@ -57,6 +57,7 @@ export class HouseDetailComponent implements OnInit {
   ) { }
   ngOnInit(): void {
     this.manager();
+    this.getHouses();
     this.route.params.pipe(
       switchMap(params => {
         this.houseId = +params['id'];
@@ -69,24 +70,17 @@ export class HouseDetailComponent implements OnInit {
         this.getApartmentsByHouseId(this.houseId);
       }
     });
-    this.getHousesSelectorData();
-    if (this.apartmentId) {
-      this.getApartmentDetails(this.apartmentId).subscribe({
-        next: (response: Apartment) => {
-          this.apartmentdetails = response;
-        }
-      });
-    };
+    
+  }
+  getHouses() {
+    this.houseService.getAllHouses().subscribe((data: House[]) => {
+      this.housesselector = data; 
+    });
   }
   getApartmentDetails(apartmentId: number) {
     return this.houseService.GetApartmentById(apartmentId);
   }
-  private getHousesSelectorData() {
 
-    this.houseService.getAllHouses().subscribe((data: House[]) => {
-      this.housesselector = data;
-    });
-  }
   onSelected(selectedHouse: number) {
     this.router.navigate(['house', selectedHouse]);
   }

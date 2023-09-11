@@ -86,8 +86,9 @@
       </div>
       <div class="sm-3 ">
         <label for="houseId" class="form-label">houseId</label>
-        <input type="number" class="form-control form-control-sm" id="houseId" name="houseId" [(ngModel)]="apartmentdetails.houseId">
-      </div>
+        <select name="residentdetails.apartmentId" class="form-select" size="1" [(ngModel)]="apartmentdetails.houseId">
+          <option *ngFor="let house of housesselector" [value]="house.id">{{ house.id}}</option>
+        </select>           </div>
       <div class="row-sm-3">
              
         <button type="submit" class="btn btn-info" (click)="checkAndUpdateApartment(apartmentdetails)">Save</button>

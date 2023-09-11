@@ -7,6 +7,7 @@ import jwtDecode from 'jwt-decode';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { DeleteConfirmationModalComponent } from '../ModalLogs/delete-confirmation-modal/delete-confirmation-modal.component';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-all-houses',
@@ -16,9 +17,10 @@ import { DeleteConfirmationModalComponent } from '../ModalLogs/delete-confirmati
 export class AllHousesComponent {
   @ViewChild('editModal') editModal!: ElementRef;
   filteredHouses: House[] = [];
+  HouseEdit!: FormGroup;
   filterValue = '';
   activeModals: NgbModalRef[] = [];
-  housesId!:number;
+  housesId!: number;
   houses: House[] = [];
   isManager: boolean = false;
   isResident: boolean = false;
@@ -35,9 +37,18 @@ export class AllHousesComponent {
   constructor(private houseService: HomesApiService,
     public modalService: NgbModal,
     private router: Router,
+    private fb: FormBuilder,
     private AuthorizeService: AuthorizeService,
-
-  ) { }
+  ) {
+    this.HouseEdit = this.fb.group({
+      id: [null, Validators.required],
+      number: [null, Validators.required],
+      city: [null, Validators.required],
+      country: [null, Validators.required],
+      postcode: [null, Validators.required],
+      street: [null, Validators.required],
+    });
+  }
   ngOnInit(): void {
     this.manager();
     this.getHouses();
@@ -69,23 +80,24 @@ export class AllHousesComponent {
       this.houses = data;
       this.filteredHouses = data;
     });
-
-  }
-  openEditModal(housesId: number) {
-    this.housesId = housesId;
-    const modalRef = this.modalService.open(this.editModal);
-    this.activeModals.push(modalRef);
-   
-    this.getHousesDetails(this.housesId).subscribe({
-     next: (response: House) => {
-       this.housedetails = response;
-     }
-   });
-
   }
   getHousesDetails(housesId: number) {
     return this.houseService.getHouseById(housesId);
   }
+
+  openEditModal(housesId: number) {
+    this.housesId = housesId;
+    const modalRef = this.modalService.open(this.editModal);
+    this.activeModals.push(modalRef);
+
+    this.getHousesDetails(this.housesId).subscribe({
+      next: (response: House) => {
+        this.housedetails = response;
+      }
+    });
+
+  }
+
   manager(): void {
     this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
       if (userRole !== null) {
