@@ -15,10 +15,12 @@ import { switchMap } from 'rxjs';
 @Component({
   selector: 'app-house-detail',
   templateUrl: './house-detail.component.html',
-  styleUrls: ['./house-detail.component.css']
+  styleUrls: ['./house-detail.component.css'],
 })
 export class HouseDetailComponent implements OnInit {
   @ViewChild('editModal') editModal!: ElementRef;
+  @ViewChild('CreateModal') CreateModal!: ElementRef;
+
   houseId!: number;
   activeModals: NgbModalRef[] = [];
   isManager: boolean = false;
@@ -44,7 +46,7 @@ export class HouseDetailComponent implements OnInit {
     population: 0,
     fullArea: 0,
     livingSpace: 0,
-    houseId: 0
+    houseId: 0,
   };
 
   constructor(
@@ -52,47 +54,45 @@ export class HouseDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private houseService: HomesApiService,
-    private AuthorizeService: AuthorizeService,
-
+    private AuthorizeService: AuthorizeService
   ) { }
   ngOnInit(): void {
     this.manager();
-    this.checkfunc();
+    this.UserApartmentsCheck();
     this.getHouses();
-
   }
 
-  checkfunc() {
+  UserApartmentsCheck() {
+    this.AuthorizeService.getAccessToken().subscribe(
+      (userRole: string | null) => {
+        if (userRole !== null && !this.isManager) {
+          const token: any = jwtDecode(userRole);
+          const houseId = token.houseid;
 
-    this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
+          this.houseService
+            .GetApartmentById(houseId)
+            .subscribe((apartment: Apartment) => {
+              this.apartments = [apartment];
+            });
+        } else {
+          this.getHouses();
+          this.route.params
+            .pipe(
+              switchMap((params) => {
+                this.houseId = +params['id'];
+                return this.getHouseDetails(this.houseId || 0);
+              })
+            )
+            .subscribe((response: House) => {
+              this.housedetails = response;
 
-      if (userRole !== null && !this.isManager) {
-        const token: any = jwtDecode(userRole);
-        const houseId = token.houseid;
-
-        this.houseService.GetApartmentById(houseId).subscribe((apartment: Apartment) => {
-          this.apartments = [apartment];
-        });
-
-
+              if (this.houseId !== undefined) {
+                this.getApartmentsByHouseId(this.houseId);
+              }
+            });
+        }
       }
-      else {
-        this.getHouses();
-        this.route.params.pipe(
-          switchMap(params => {
-            this.houseId = +params['id'];
-            return this.getHouseDetails(this.houseId || 0);
-          })
-        ).subscribe((response: House) => {
-          this.housedetails = response;
-
-          if (this.houseId !== undefined) {
-            this.getApartmentsByHouseId(this.houseId);
-          }
-        });
-      }
-
-    });
+    );
   }
 
   getHouses() {
@@ -111,7 +111,6 @@ export class HouseDetailComponent implements OnInit {
     return this.houseService.getHouseById(houseId);
   }
 
-
   openEditModal(apartmentId: number) {
     this.apartmentId = apartmentId;
     const modalRef = this.modalService.open(this.editModal);
@@ -120,9 +119,8 @@ export class HouseDetailComponent implements OnInit {
     this.getApartmentDetails(this.apartmentId).subscribe({
       next: (response: Apartment) => {
         this.apartmentdetails = response;
-      }
+      },
     });
-
   }
 
   getApartmentsByHouseId(houseId: number) {
@@ -137,40 +135,44 @@ export class HouseDetailComponent implements OnInit {
   }
 
   manager(): void {
-    this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
-      if (userRole !== null) {
-        const token: any = jwtDecode(userRole);
-        const role = token.role;
+    this.AuthorizeService.getAccessToken().subscribe(
+      (userRole: string | null) => {
+        if (userRole !== null) {
+          const token: any = jwtDecode(userRole);
+          const role = token.role;
 
-        this.isManager = role === 'Manager';
-        this.isResident = role === 'Resident';
-      } else {
-        this.isManager = false;
-        this.isResident = false;
+          this.isManager = role === 'Manager';
+          this.isResident = role === 'Resident';
+        } else {
+          this.isManager = false;
+          this.isResident = false;
+        }
       }
-    });
+    );
+  }
+
+  openCreateModal() {
+    this.apartmentdetails = {} as Apartment;
+    const modalRef = this.modalService.open(this.CreateModal);
+    this.activeModals.push(modalRef);
+  }
+  CreateApartment(apartmentdetails: Apartment) {
+    this.houseService
+      .CreateApartment(this.apartmentdetails)
+      .subscribe(() => { });
+    this.closeModalAndRefresh();
   }
   checkAndUpdateApartment(apartment: Apartment) {
-    const houseNumberToCheck = apartment.number;
-    this.houseService.doesApartmentExistByNumber(houseNumberToCheck, apartment.houseId).subscribe((exists) => {
-      if (exists) {
-        console.log(exists)
-        this.houseService.UpdateApartment(this.apartmentdetails.id, this.apartmentdetails).subscribe(() => {
-        });
-      } else if (!exists && this.isManager) {
-        this.houseService.CreateApartment(this.apartmentdetails).subscribe(() => {
-        });
-      }
-    });
+    this.houseService
+      .UpdateApartment(this.apartmentdetails.id, this.apartmentdetails)
+      .subscribe(() => { });
     this.closeModalAndRefresh();
-
   }
-
 
   async Delete(apartmentId: number) {
     const result = this.openConfirmationModal();
     if (await result) {
-      this.deletApartment(this.apartmentId)
+      this.deletApartment(this.apartmentId);
     } else {
     }
   }
@@ -178,28 +180,32 @@ export class HouseDetailComponent implements OnInit {
     this.houseService.DeleteApartment(apartmentId).subscribe({
       next: (response) => {
         this.closeModalAndRefresh();
-      }
-    })
-  }
-  openConfirmationModal(): Promise<boolean> {
-    const modalRef: NgbModalRef = this.modalService.open(DeleteConfirmationModalComponent);
-    this.activeModals.push(modalRef);
-
-
-    return modalRef.result.then((result) => {
-      return result === true;
-    }).catch(() => {
-      return false;
+      },
     });
   }
+  openConfirmationModal(): Promise<boolean> {
+    const modalRef: NgbModalRef = this.modalService.open(
+      DeleteConfirmationModalComponent
+    );
+    this.activeModals.push(modalRef);
+
+    return modalRef.result
+      .then((result) => {
+        return result === true;
+      })
+      .catch(() => {
+        return false;
+      });
+  }
   closeModalAndRefresh() {
-    this.activeModals.forEach(modalRef => {
+    this.activeModals.forEach((modalRef) => {
       modalRef.dismiss();
     });
     this.activeModals = [];
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
-      this.router.navigate(['house/' + this.apartmentdetails.houseId]))
+    this.router
+      .navigateByUrl('/', { skipLocationChange: true })
+      .then(() =>
+        this.router.navigate(['house/' + this.apartmentdetails.houseId])
+      );
   }
-
-
 }

@@ -5,7 +5,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { ApiAuthorizationModule } from 'src/api-authorization/api-authorization.module';
-import { AuthorizeGuard } from 'src/api-authorization/authorize.guard';
 import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
 import { AllHousesComponent } from './all-houses/all-houses.component';
 import { ApartmentComponent } from './apartment/apartment.component';
@@ -13,7 +12,10 @@ import { HouseDetailComponent } from './house-detail/house-detail.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DeleteConfirmationModalComponent } from './delete-confirmation-modal/delete-confirmation-modal.component';
-
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,8 @@ import { DeleteConfirmationModalComponent } from './delete-confirmation-modal/de
     HouseDetailComponent,
     AppComponent,
     NavMenuComponent,
-    DeleteConfirmationModalComponent
+    DeleteConfirmationModalComponent,
+    
     
   
   ],
@@ -34,6 +37,10 @@ import { DeleteConfirmationModalComponent } from './delete-confirmation-modal/de
     ApiAuthorizationModule,
     ReactiveFormsModule,
     FormsModule,
+    MatInputModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    BrowserAnimationsModule
 
     
   ],

@@ -24,6 +24,8 @@ import { HouseDetailComponent } from '../house-detail/house-detail.component';
 
 export class ApartmentComponent implements OnInit {
   @ViewChild('editModal') editModal!: ElementRef;
+  @ViewChild('CreateModal') CreateModal!: ElementRef;
+
   apartmentId!: number;
   residentId!: number;
   isManager: boolean = false;
@@ -98,7 +100,11 @@ export class ApartmentComponent implements OnInit {
       },
     );
   }
-
+  openCreateModal(){
+    this.residentdetails = {} as Resident;
+    const modalRef = this.modalService.open(this.CreateModal);
+    this.activeModals.push(modalRef);
+  }
   openEditModal(residentId: number) {
     this.residentId = residentId;
     const modalRef = this.modalService.open(this.editModal);
@@ -111,9 +117,10 @@ export class ApartmentComponent implements OnInit {
     });
 
   }
-  openEditModalEditApartment(apartmentId: number) {
-    const modalRef = this.modalService.open(HouseDetailComponent);
-    modalRef.componentInstance.apartmentId = apartmentId;
+  CreateResident(residentdetails:Resident){
+    this.houseService.CreateResident(this.residentdetails).subscribe(() => {
+    });
+    this.closeModalAndRefresh();
   }
   manager(): void {
     this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {

@@ -1,17 +1,14 @@
 <div class="container">
   <h2>Apartment:{{apartmentdetails.number}}</h2>
-  <div class="">
-    <button class="btn btn-warning" *ngIf="!(residents !== null && residents !== undefined && residents.length > 0)" (click)="openEditModal(apartmentdetails.id)">Add Resident</button>
 
-
-  </div>
 
 
 </div>
 <div class="container">
   <table class="table">
   </table>
-  <h2>Residents</h2>
+  <h2>Residents   <button class="btn btn-warning"  (click)="openCreateModal()">Add Resident</button>
+  </h2>
   <table class="table">
     <thead>
       <tr>
@@ -45,6 +42,8 @@
       </tr>
     </tbody>
   </table>
+  <div>
+  </div>
 </div>
 
 <ng-template #editModal>
@@ -97,6 +96,59 @@
     </div>
     <button type="submit" class="btn btn-info" (click)="checkAndUpdateHouse(residentdetails)">Save</button>
     <button class="btn btn-danger"  [disabled]="!(isManager)" (click)="Delete(residentdetails.id)">Delete</button>
+    <button class="btn btn-warning"(click)="closeModalAndRefresh()">Cancel</button>
+  </div>
+</ng-template>
+
+<ng-template #CreateModal>
+
+  <div class="container">
+    <h2>Resident Details</h2>
+    <div>
+      <form #form="ngForm" >
+        <div class="mb-3">
+            <label for="name" class="form-label">Id:</label>
+            <input type="text" class="form-control" id="id" name="id" [(ngModel)]="residentdetails.id" required>
+          </div>
+        <div class="mb-3">
+          <label for="name" class="form-label">Name:</label>
+          <input type="text" class="form-control" id="name" name="name" [(ngModel)]="residentdetails.name" required>
+        </div>
+        <div class="mb-3">
+          <label for="surname" class="form-label">Surname:</label>
+          <input type="text" class="form-control" id="surname" name="surname" [(ngModel)]="residentdetails.surname" required>
+        </div>
+        <div class="mb-3">
+          <label for="personalCode" class="form-label">Personal Code:</label>
+          <input type="text" class="form-control" id="personalCode" name="personalCode" [(ngModel)]="residentdetails.personalCode" required>
+        </div>
+        <div class="mb-3">
+          <label for="dateOfBirth" class="form-label">Date of Birth:</label>
+          <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" [(ngModel)]="residentdetails.dateOfBirth" required>
+        </div>
+        <div class="mb-3">
+          <label for="phone" class="form-label">Phone:</label>
+          <input type="text" class="form-control" id="phone" name="phone" [(ngModel)]="residentdetails.phone" required>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email:</label>
+          <input type="email" class="form-control" id="email" name="email" [(ngModel)]="residentdetails.email" required>
+        </div>
+  
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="isOwner" name="isOwner" [(ngModel)]="residentdetails.isOwner">
+          <label class="form-check-label" for="isOwner">Is Owner</label>
+        </div>
+        
+        <div class="mb-3 form-check apartmentidclass">
+          <label for="apartmentId" class="form-label">ApartmentId:</label>
+          <select name="residentdetails.apartmentId" class="form-select" size="1" [(ngModel)]="residentdetails.apartmentId">
+            <option *ngFor="let apartment of apartments" [value]="apartment.id">{{ apartment.id }}</option>
+          </select>      
+        </div>
+      </form>
+    </div>
+    <button type="submit" class="btn btn-info" (click)="CreateResident(residentdetails)">Create</button>
     <button class="btn btn-warning"(click)="closeModalAndRefresh()">Cancel</button>
   </div>
 </ng-template>

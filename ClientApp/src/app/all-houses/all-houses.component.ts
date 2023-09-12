@@ -16,6 +16,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class AllHousesComponent {
   @ViewChild('editModal') editModal!: ElementRef;
+  @ViewChild('CreateModal') CreateModal!: ElementRef;
   HouseEdit!: FormGroup;
   filterValue = '';
   activeModals: NgbModalRef[] = [];
@@ -100,6 +101,36 @@ applyFilter(filterValue: string) {
       }
     });
   }
+  openCreateModal(){
+    this.housedetails = {} as House;
+    const modalRef = this.modalService.open(this.CreateModal);
+    this.activeModals.push(modalRef);
+  }
+  CreateHouse(houseService:House){
+    this.houseService.CreateHouse(this.housedetails).subscribe({
+      next: (createdHouse) => {           
+      }
+    });
+    this.closeModalAndRefresh();
+  }
+
+    UpdateHouse(house: House) {      
+      this.houseService.UpdateHouse(this.housedetails.id, this.housedetails).subscribe({
+        next: (response) => {
+        }
+      }); 
+    this.closeModalAndRefresh();
+  
+}
+deleteHouse(houseId: number) {
+  this.houseService.DeleteHouse(houseId).subscribe({
+    next: (response) => {
+      this.router.navigate(['all-houses'])
+      this.closeModalAndRefresh();
+    }
+  })
+
+}
 
   manager(): void {
     this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
@@ -116,15 +147,7 @@ applyFilter(filterValue: string) {
     });
   }
 
-  deleteHouse(houseId: number) {
-    this.houseService.DeleteHouse(houseId).subscribe({
-      next: (response) => {
-        this.router.navigate(['all-houses'])
-        this.closeModalAndRefresh();
-      }
-    })
 
-  }
   async Delete(houseId: number) {
     const result = this.openConfirmationModal();
     if (await result) {
@@ -143,25 +166,6 @@ applyFilter(filterValue: string) {
     });
   }
 
-
-  checkAndUpdateHouse(house: House) {
-    const houseNumberToCheck = house.number;
-    this.houseService.doesHouseExistByNumber(houseNumberToCheck).subscribe((exists) => {
-      if (exists) {
-        this.houseService.UpdateHouse(this.housedetails.id, this.housedetails).subscribe({
-          next: (response) => {
-          }
-        });
-      } else {
-        this.houseService.CreateHouse(this.housedetails).subscribe({
-          next: (createdHouse) => {           
-          }
-        });
-      }
-      this.closeModalAndRefresh();
-    });
-    
-  }
 
   closeModalAndRefresh() {
     this.activeModals.forEach(modalRef => {
