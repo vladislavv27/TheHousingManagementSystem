@@ -6,7 +6,7 @@ import { AuthorizeService } from 'src/api-authorization/authorize.service';
 import jwtDecode from 'jwt-decode';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
-import { DeleteConfirmationModalComponent } from '../ModalLogs/delete-confirmation-modal/delete-confirmation-modal.component';
+import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -16,15 +16,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class AllHousesComponent {
   @ViewChild('editModal') editModal!: ElementRef;
-  filteredHouses: House[] = [];
   HouseEdit!: FormGroup;
   filterValue = '';
   activeModals: NgbModalRef[] = [];
   housesId!: number;
+  filteredHouses: House[] = [];
+  filterInput: Subject<string> = new Subject<string>();
   houses: House[] = [];
   isManager: boolean = false;
   isResident: boolean = false;
-  filterInput$: Subject<string> = new Subject<string>();
   housedetails: House = {
     id: 0,
     number: 0,
@@ -37,44 +37,48 @@ export class AllHousesComponent {
   constructor(private houseService: HomesApiService,
     public modalService: NgbModal,
     private router: Router,
-    private fb: FormBuilder,
     private AuthorizeService: AuthorizeService,
   ) {
-    this.HouseEdit = this.fb.group({
-      id: [null, Validators.required],
-      number: [null, Validators.required],
-      city: [null, Validators.required],
-      country: [null, Validators.required],
-      postcode: [null, Validators.required],
-      street: [null, Validators.required],
-    });
   }
   ngOnInit(): void {
     this.manager();
-    this.getHouses();
-    this.filterInput$.subscribe((filterValue) => {
-      if (!filterValue.trim()) {
-        this.filteredHouses = this.houses;
-      } else {
-        this.filteredHouses = this.houses.filter((house) =>
-          house.street.toLowerCase().includes(filterValue.toLowerCase())
-        );
+    this.checkAutorization();
+    this.filterInput.pipe().subscribe((filterValue) => {
+      this.applyFilter(filterValue);
+    });
+
+  }
+  checkAutorization() {
+    this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
+      if (userRole !== null && !this.isManager) {
+        const token: any = jwtDecode(userRole);
+        const houseid = token.houseid;
+        this.houseService.getHouseById(houseid).subscribe((house: any) => {
+          this.houses = [house];
+        });
+      }
+      else {
+        this.getHouses();
       }
     });
   }
-  onFilterInputChange() {
-    this.filterInput$.next(this.filterValue);
-  }
 
-  applyFilter() {
-    if (this.filterValue.trim() === '') {
-      this.houses = this.houses;
-    } else {
-      this.houses = this.houses.filter((house) =>
-        house.street.toLowerCase().includes(this.filterValue.toLowerCase())
-      );
-    }
+ onFilterInputChange() {
+  this.filterInput.next(this.filterValue);
+}
+
+
+applyFilter(filterValue: string) {
+  if (!filterValue.trim()) {
+    this.filteredHouses = this.houses;
+  } else {
+    this.filteredHouses = this.houses.filter((house) =>
+      house.street.toLowerCase().includes(filterValue.toLowerCase())
+    );
   }
+}
+
+
   getHouses() {
     this.houseService.getAllHouses().subscribe((data: House[]) => {
       this.houses = data;
@@ -95,7 +99,6 @@ export class AllHousesComponent {
         this.housedetails = response;
       }
     });
-
   }
 
   manager(): void {
@@ -147,20 +150,17 @@ export class AllHousesComponent {
       if (exists) {
         this.houseService.UpdateHouse(this.housedetails.id, this.housedetails).subscribe({
           next: (response) => {
-            this.router.navigate(['all-houses']);
           }
         });
-        this.closeModalAndRefresh();
       } else {
         this.houseService.CreateHouse(this.housedetails).subscribe({
           next: (createdHouse) => {
-            this.router.navigate(['all-houses']);
           }
         });
       }
 
-      this.closeModalAndRefresh();
     });
+    this.closeModalAndRefresh();
   }
 
   closeModalAndRefresh() {
@@ -168,6 +168,7 @@ export class AllHousesComponent {
       modalRef.dismiss();
     });
     this.activeModals = [];
+    this.router.navigate(['all-houses']);
     location.reload();
   }
 }

@@ -8,7 +8,7 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AuthorizeService, IUser } from 'src/api-authorization/authorize.service';
 import jwtDecode from 'jwt-decode';
-import { DeleteConfirmationModalComponent } from '../ModalLogs/delete-confirmation-modal/delete-confirmation-modal.component';
+import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
 import { Observable, map } from 'rxjs';
 import { HouseDetailComponent } from '../house-detail/house-detail.component';
 
@@ -177,7 +177,8 @@ export class ApartmentComponent implements OnInit {
     this.activeModals = [];
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
       this.router.navigate(['apartments/' + this.residentdetails.apartmentId + '/residents']))
+      location.reload();
   }
-
+   
 
 }

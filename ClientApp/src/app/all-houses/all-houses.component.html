@@ -37,15 +37,15 @@
   <div class="container">
     <h2>House</h2>
     <div class="">
-      <form #form="ngForm">
+      <form #form="ngForm" >
         <div class="form-group row ">
         <div class="col-sm-3 ">
           <label for="id" class="form-label">Id</label>
-          <input type="number" class="form-control form-control-sm" id="id" name="id" [(ngModel)]="housedetails.id">
+          <input type="number" class="form-control form-control-sm" id="id" name="id" [(ngModel)]="housedetails.id" required>
         </div>
         <div class="col-sm-3 ">
           <label for="number" class="form-label">Number</label>
-          <input type="number" class="form-control form-control-sm" id="number" name="number" [(ngModel)]="housedetails.number">
+          <input type="number" class="form-control form-control-sm" id="number" name="number" [(ngModel)]="housedetails.number" required>
         </div>
         
         <div class="col-sm-3 ">
@@ -71,10 +71,6 @@
         </div>
       </div>
       </form>
-      
     </div>
-  
-  
   </div>
-  
 </ng-template>

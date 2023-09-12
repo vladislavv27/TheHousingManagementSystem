@@ -13,7 +13,7 @@ import { ApartmentComponent } from './apartment/apartment.component';
 import { HouseDetailComponent } from './house-detail/house-detail.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ReactiveFormsModule } from '@angular/forms';
-import { DeleteConfirmationModalComponent } from './ModalLogs/delete-confirmation-modal/delete-confirmation-modal.component';
+import { DeleteConfirmationModalComponent } from './delete-confirmation-modal/delete-confirmation-modal.component';
 
 
 @NgModule({

@@ -32,6 +32,9 @@ namespace VMihailovUi.Service
                     new Claim(ClaimTypes.Name, user.UserName),
                     new Claim("nameidentifier", user.Id),
                     new Claim("name", user.UserName),
+                    new Claim("houseid", user.HouseId),
+                    new Claim("apartmentid", user.ApartmentId), 
+                    new Claim("residentid", user.ResidentId) 
                 };
 
                 foreach (var role in roles)

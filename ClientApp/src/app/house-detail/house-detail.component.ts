@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 import { AuthorizeService } from 'src/api-authorization/authorize.service';
 import jwtDecode from 'jwt-decode';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { DeleteConfirmationModalComponent } from '../ModalLogs/delete-confirmation-modal/delete-confirmation-modal.component';
+import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
 import { switchMap } from 'rxjs';
 @Injectable({
   providedIn: 'root',
@@ -57,21 +57,45 @@ export class HouseDetailComponent implements OnInit {
   ) { }
   ngOnInit(): void {
     this.manager();
+    this. checkfunc();
     this.getHouses();
-    this.route.params.pipe(
-      switchMap(params => {
-        this.houseId = +params['id'];
-        return this.getHouseDetails(this.houseId || 0);
-      })
-    ).subscribe((response: House) => {
-      this.housedetails = response;
 
-      if (this.houseId !== undefined) {
-        this.getApartmentsByHouseId(this.houseId);
-      }
-    });
     
   }
+
+  checkfunc() {
+
+    this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
+
+      if (userRole !== null && !this.isManager) {
+        const token: any = jwtDecode(userRole);
+        const houseId = token.houseid;
+
+        this.houseService.GetApartmentById(houseId).subscribe((apartment: Apartment) => {
+          this.apartments = [apartment];
+        });
+      
+
+      }
+      else {
+        this.getHouses();
+        this.route.params.pipe(
+          switchMap(params => {
+            this.houseId = +params['id'];
+            return this.getHouseDetails(this.houseId || 0);
+          })
+        ).subscribe((response: House) => {
+          this.housedetails = response;
+    
+          if (this.houseId !== undefined) {
+            this.getApartmentsByHouseId(this.houseId);
+          }
+        });
+      }
+
+    });
+  }
+
   getHouses() {
     this.houseService.getAllHouses().subscribe((data: House[]) => {
       this.housesselector = data; 
