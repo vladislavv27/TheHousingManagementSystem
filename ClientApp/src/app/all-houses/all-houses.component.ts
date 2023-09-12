@@ -54,7 +54,7 @@ export class AllHousesComponent {
         const token: any = jwtDecode(userRole);
         const houseid = token.houseid;
         this.houseService.getHouseById(houseid).subscribe((house: any) => {
-          this.houses = [house];
+          this.filteredHouses = [house];
         });
       }
       else {
@@ -154,13 +154,13 @@ applyFilter(filterValue: string) {
         });
       } else {
         this.houseService.CreateHouse(this.housedetails).subscribe({
-          next: (createdHouse) => {
+          next: (createdHouse) => {           
           }
         });
       }
-
+      this.closeModalAndRefresh();
     });
-    this.closeModalAndRefresh();
+    
   }
 
   closeModalAndRefresh() {

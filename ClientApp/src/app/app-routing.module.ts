@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { AllHousesComponent } from './all-houses/all-houses.component';
 import { HouseDetailComponent } from './house-detail/house-detail.component';
 import { ApartmentComponent } from './apartment/apartment.component';
-import { HomeComponent } from './home/home.component';
 import { AuthorizeGuard } from 'src/api-authorization/authorize.guard';
 
 const routes: Routes = [

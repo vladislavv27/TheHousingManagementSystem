@@ -94,6 +94,7 @@ export class ApartmentComponent implements OnInit {
     this.houseService.GetApartmentsResident(Apartmentid).subscribe(
       (residents: Resident[]) => {
         this.residents = residents;
+       
       },
     );
   }

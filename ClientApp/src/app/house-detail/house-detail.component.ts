@@ -26,7 +26,7 @@ export class HouseDetailComponent implements OnInit {
   apartmentId!: number;
   house!: House;
   apartments!: Apartment[];
-  selectedHouse: number = 0;
+  selectedHouse!: number;
   housesselector: House[] = [];
   housedetails: House = {
     id: 0,
@@ -57,10 +57,9 @@ export class HouseDetailComponent implements OnInit {
   ) { }
   ngOnInit(): void {
     this.manager();
-    this. checkfunc();
+    this.checkfunc();
     this.getHouses();
 
-    
   }
 
   checkfunc() {
@@ -74,7 +73,7 @@ export class HouseDetailComponent implements OnInit {
         this.houseService.GetApartmentById(houseId).subscribe((apartment: Apartment) => {
           this.apartments = [apartment];
         });
-      
+
 
       }
       else {
@@ -86,7 +85,7 @@ export class HouseDetailComponent implements OnInit {
           })
         ).subscribe((response: House) => {
           this.housedetails = response;
-    
+
           if (this.houseId !== undefined) {
             this.getApartmentsByHouseId(this.houseId);
           }
@@ -98,7 +97,7 @@ export class HouseDetailComponent implements OnInit {
 
   getHouses() {
     this.houseService.getAllHouses().subscribe((data: House[]) => {
-      this.housesselector = data; 
+      this.housesselector = data;
     });
   }
   getApartmentDetails(apartmentId: number) {
@@ -117,12 +116,12 @@ export class HouseDetailComponent implements OnInit {
     this.apartmentId = apartmentId;
     const modalRef = this.modalService.open(this.editModal);
     this.activeModals.push(modalRef);
-   
+
     this.getApartmentDetails(this.apartmentId).subscribe({
-     next: (response: Apartment) => {
-       this.apartmentdetails = response;
-     }
-   });
+      next: (response: Apartment) => {
+        this.apartmentdetails = response;
+      }
+    });
 
   }
 
@@ -196,7 +195,6 @@ export class HouseDetailComponent implements OnInit {
   closeModalAndRefresh() {
     this.activeModals.forEach(modalRef => {
       modalRef.dismiss();
-      console.log(modalRef)
     });
     this.activeModals = [];
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
