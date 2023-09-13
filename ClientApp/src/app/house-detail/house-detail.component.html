@@ -4,7 +4,7 @@
       <h2>House number: {{ housedetails.number }}</h2>
     </div>
     <div class="col-sm-6">
-      <select class="form-select"  size="1" [(ngModel)]="selectedHouse" (change)="onSelected(selectedHouse)">
+      <select class="form-select" size="1" [(ngModel)]="selectedHouse" (change)="onSelected(selectedHouse)">
         <option *ngFor="let house of housesselector" [value]="house.id">{{ house.number }}</option>
       </select>
     </div>
@@ -15,9 +15,8 @@
 
   <div class="container">
     <h2>All Apartments
-      <button class="btn btn-warning" [disabled]="!isManager"
-        (click)="(openCreateModal())">Add Apartment</button>
-    </h2>  
+      <button class="btn btn-warning" [disabled]="!isManager" (click)="(openCreateModal())">Add Apartment</button>
+    </h2>
     <table class="table">
       <thead>
         <tr>
@@ -41,10 +40,9 @@
           <td>{{ apartment.population }}</td>
           <td>{{ apartment.fullArea }}</td>
           <td>{{ apartment.livingSpace }}</td>
-          <!-- Use [routerLink] to navigate to residents of the specific apartment -->
           <td><a class="btn btn-info" [routerLink]="['/apartments', apartment.id, 'residents']">View</a></td>
           <td><button class="btn btn-success" [disabled]="!isManager"
-              (click)="openEditModal(apartment.id)">Edit</button></td>
+              (click)="openEditApartmentModal(apartment.id)">Edit</button></td>
         </tr>
       </tbody>
     </table>
@@ -52,95 +50,133 @@
 
 
   <ng-template #editModal>
-    <h2>Apartmemt Details</h2>
-    <form #form="ngForm">
-      <div class="form-group row ">
-      <div class="sm-3 ">
-        <label for="id" class="form-label">Id</label>
-        <input type="number" class="form-control form-control-sm" id="id" name="id" [(ngModel)]="apartmentdetails.id">
-      </div>
-      <div class="sm-3 ">
-        <label for="number" class="form-label">Number</label>
-        <input type="number" class="form-control form-control-sm" id="number" name="number" [(ngModel)]="apartmentdetails.number">
-      </div>
-      <div class="sm-3 ">
-        <label for="floor" class="form-label">Floor</label>
-        <input type="number" class="form-control form-control-sm" id="floor" name="floor" [(ngModel)]="apartmentdetails.floor">
-      </div>
-      <div class="sm-3 ">
-        <label for="numberOfRooms" class="form-label">Number of Rooms</label>
-        <input type="number" class="form-control form-control-sm" id="numberOfRooms" name="numberOfRooms" [(ngModel)]="apartmentdetails.numberOfRooms">
-      </div>
-      <div class="sm-3 ">
-        <label for="population" class="form-label">Population</label>
-        <input type="number" class="form-control form-control-sm" id="population" name="population" [(ngModel)]="apartmentdetails.population">
-      </div>
-      <div class="sm-3 ">
-        <label for="fullArea" class="form-label">Full Area</label>
-        <input type="number" class="form-control form-control-sm" id="fullArea" name="fullArea" [(ngModel)]="apartmentdetails.fullArea">
-      </div>
-      <div class="sm-3 ">
-        <label for="livingSpace" class="form-label">Living Space</label>
-        <input type="number" class="form-control form-control-sm" id="livingSpace" name="livingSpace" [(ngModel)]="apartmentdetails.livingSpace">
-      </div>
-      <div class="sm-3 ">
-        <label for="houseId" class="form-label">houseId</label>
-        <select name="residentdetails.apartmentId" class="form-select" size="1" [(ngModel)]="apartmentdetails.houseId">
-          <option *ngFor="let house of housesselector" [value]="house.id">{{ house.id}}</option>
-        </select>           </div>
-      <div class="row-sm-3">
-             
-        <button type="submit" class="btn btn-info" (click)="checkAndUpdateApartment(apartmentdetails)">Save</button>
-        <button class="btn btn-danger"  [disabled]="!(isManager)" (click)="Delete(apartmentdetails.id)">Delete</button>
-        <button class="btn btn-warning"(click)="closeModalAndRefresh()">Cancel</button>
-      </div>
+    <div class="container">
+      <h2>Apartmemt Details</h2>
+      <form [formGroup]="apartmentEditForm">
+        <div class="form-group row">
+          <div class="col-sm-3">
+            <label for="id" class="form-label">Id</label>
+            <input type="number" class="form-control form-control-sm" id="id" formControlName="id">
+          </div>
+          <div class="col-sm-3">
+            <label for="number" class="form-label">Number</label>
+            <input type="number" class="form-control form-control-sm" id="number" formControlName="number" required>
+            <div *ngIf="apartmentEditForm.get('number')?.hasError('required') && apartmentEditForm.get('number')?.touched"
+              class="text-danger small">Number is required</div>
+          </div>
+          <div class="col-sm-3">
+            <label for="floor" class="form-label">Floor</label>
+            <input type="number" class="form-control form-control-sm" id="floor" formControlName="floor" required="">
+            <div *ngIf="apartmentEditForm.get('floor')?.hasError('required') && apartmentEditForm.get('floor')?.touched"
+              class="text-danger small">Floor is required</div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <label for="numberOfRooms" class="form-label">Number of Rooms</label>
+          <input type="number" class="form-control form-control-sm" id="numberOfRooms" formControlName="numberOfRooms">
+          <div
+            *ngIf="apartmentEditForm.get('numberOfRooms')?.hasError('required') && apartmentEditForm.get('numberOfRooms')?.touched"
+            class="text-danger small">Number Of Rooms is required</div>
+        </div>
+        <div class="col-sm-3">
+          <label for="population" class="form-label">Population</label>
+          <input type="number" class="form-control form-control-sm" id="population" formControlName="population">
+          <div *ngIf="apartmentEditForm.get('population')?.hasError('required') && apartmentEditForm.get('population')?.touched"
+            class="text-danger small">Population is required</div>
+        </div>
+        <div class="col-sm-3">
+          <label for="fullArea" class="form-label">Full Area</label>
+          <input type="number" class="form-control form-control-sm" id="fullArea" formControlName="fullArea">
+          <div *ngIf="apartmentEditForm.get('fullArea')?.hasError('required') && apartmentEditForm.get('fullArea')?.touched"
+            class="text-danger small">FullArea is required</div>
+
+        </div>
+        <div class="col-sm-3">
+          <label for="livingSpace" class="form-label">Living Space</label>
+          <input type="number" class="form-control form-control-sm" id="livingSpace" formControlName="livingSpace">
+          <div
+            *ngIf="apartmentEditForm.get('livingSpace')?.hasError('required') && apartmentEditForm.get('livingSpace')?.touched"
+            class="text-danger small">living Space is required</div>
+        </div>
+        <div class="col-sm-3">
+          <label for="houseId" class="form-label">House Id</label>
+          <select class="form-select" id="houseId" formControlName="houseId">
+            <option [value]="house.id" *ngFor="let house of housesselector">{{ house.id }}</option>
+          </select>
+          <div *ngIf="apartmentEditForm.get('houseId')?.hasError('required') && apartmentEditForm.get('houseId')"
+            class="text-danger small">House Id is required</div>
+        </div>
+        <div class="row-sm-3">
+          <button type="submit" [disabled]="!(isManager)" class="btn btn-info" (click)="onFormSubmitEdit()">Save</button>
+          <button class="btn btn-danger" [disabled]="!(isManager)" (click)="Delete()">Delete</button>
+          <button class="btn btn-warning" (click)="closeModalAndRefresh()">Cancel</button>
+        </div>
+      </form>
     </div>
-    </form>
   </ng-template>
 
-  
+
   <ng-template #CreateModal>
-    <h2>Apartmemt Details</h2>
-    <form #form="ngForm">
-      <div class="form-group row ">
-      <div class="sm-3 ">
-        <label for="id" class="form-label">Id</label>
-        <input type="number" class="form-control form-control-sm" id="id" name="id" [(ngModel)]="apartmentdetails.id">
-      </div>
-      <div class="sm-3 ">
-        <label for="number" class="form-label">Number</label>
-        <input type="number" class="form-control form-control-sm" id="number" name="number" [(ngModel)]="apartmentdetails.number">
-      </div>
-      <div class="sm-3 ">
-        <label for="floor" class="form-label">Floor</label>
-        <input type="number" class="form-control form-control-sm" id="floor" name="floor" [(ngModel)]="apartmentdetails.floor">
-      </div>
-      <div class="sm-3 ">
-        <label for="numberOfRooms" class="form-label">Number of Rooms</label>
-        <input type="number" class="form-control form-control-sm" id="numberOfRooms" name="numberOfRooms" [(ngModel)]="apartmentdetails.numberOfRooms">
-      </div>
-      <div class="sm-3 ">
-        <label for="population" class="form-label">Population</label>
-        <input type="number" class="form-control form-control-sm" id="population" name="population" [(ngModel)]="apartmentdetails.population">
-      </div>
-      <div class="sm-3 ">
-        <label for="fullArea" class="form-label">Full Area</label>
-        <input type="number" class="form-control form-control-sm" id="fullArea" name="fullArea" [(ngModel)]="apartmentdetails.fullArea">
-      </div>
-      <div class="sm-3 ">
-        <label for="livingSpace" class="form-label">Living Space</label>
-        <input type="number" class="form-control form-control-sm" id="livingSpace" name="livingSpace" [(ngModel)]="apartmentdetails.livingSpace">
-      </div>
-      <div class="sm-3 ">
-        <label for="houseId" class="form-label">houseId</label>
-        <select name="residentdetails.apartmentId" class="form-select" size="1" [(ngModel)]="apartmentdetails.houseId">
-          <option *ngFor="let house of housesselector" [value]="house.id">{{ house.id}}</option>
-        </select>           </div>
-      <div class="row-sm-3">
-             
-        <button type="submit" class="btn btn-info" (click)="CreateApartment(apartmentdetails)">Create</button>
-        <button class="btn btn-warning"(click)="closeModalAndRefresh()">Cancel</button>
-      </div>
+    <div class="container">
+      <h2>Apartmemt Details</h2>
+      <form [formGroup]="apartmentCreateForm">
+        <div class="form-group row">
+          <div class="col-sm-3">
+            <label for="id" class="form-label">Id</label>
+            <input type="number" class="form-control form-control-sm" id="id" formControlName="id">
+          </div>
+          <div class="col-sm-3">
+            <label for="number" class="form-label">Number</label>
+            <input type="number" class="form-control form-control-sm" id="number" formControlName="number" required>
+            <div *ngIf="apartmentCreateForm.get('number')?.hasError('required') && apartmentCreateForm.get('number')?.touched"
+              class="text-danger small">Number is required</div>
+          </div>
+          <div class="col-sm-3">
+            <label for="floor" class="form-label">Floor</label>
+            <input type="number" class="form-control form-control-sm" id="floor" formControlName="floor" required="">
+            <div *ngIf="apartmentCreateForm.get('floor')?.hasError('required') && apartmentCreateForm.get('floor')?.touched"
+              class="text-danger small">Floor is required</div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <label for="numberOfRooms" class="form-label">Number of Rooms</label>
+          <input type="number" class="form-control form-control-sm" id="numberOfRooms" formControlName="numberOfRooms">
+          <div
+            *ngIf="apartmentCreateForm.get('numberOfRooms')?.hasError('required') && apartmentCreateForm.get('numberOfRooms')?.touched"
+            class="text-danger small">Number Of Rooms is required</div>
+        </div>
+        <div class="col-sm-3">
+          <label for="population" class="form-label">Population</label>
+          <input type="number" class="form-control form-control-sm" id="population" formControlName="population">
+          <div *ngIf="apartmentCreateForm.get('population')?.hasError('required') && apartmentCreateForm.get('population')?.touched"
+            class="text-danger small">Population is required</div>
+        </div>
+        <div class="col-sm-3">
+          <label for="fullArea" class="form-label">Full Area</label>
+          <input type="number" class="form-control form-control-sm" id="fullArea" formControlName="fullArea">
+          <div *ngIf="apartmentCreateForm.get('fullArea')?.hasError('required') && apartmentCreateForm.get('fullArea')?.touched"
+            class="text-danger small">FullArea is required</div>
+
+        </div>
+        <div class="col-sm-3">
+          <label for="livingSpace" class="form-label">Living Space</label>
+          <input type="number" class="form-control form-control-sm" id="livingSpace" formControlName="livingSpace">
+          <div
+            *ngIf="apartmentCreateForm.get('livingSpace')?.hasError('required') && apartmentCreateForm.get('livingSpace')?.touched"
+            class="text-danger small">living Space is required</div>
+        </div>
+        <div class="col-sm-3">
+          <label for="houseId" class="form-label">House Id</label>
+          <select class="form-select" id="houseId" formControlName="houseId">
+            <option [value]="house.id" *ngFor="let house of housesselector">{{ house.id }}</option>
+          </select>
+          <div *ngIf="apartmentCreateForm.get('houseId')?.hasError('required') && apartmentCreateForm.get('houseId')"
+            class="text-danger small">House Id is required</div>
+        </div>
+        <div class="row-sm-3">
+          <button type="submit" [disabled]="!(isManager)" class="btn btn-info" (click)="onFormSubmitCreate()">Create</button>
+          <button class="btn btn-warning" (click)="closeModalAndRefresh()">Cancel</button>
+        </div>
+      </form>
     </div>
-    </form>
   </ng-template>

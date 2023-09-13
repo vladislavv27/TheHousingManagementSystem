@@ -9,8 +9,6 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AuthorizeService, IUser } from 'src/api-authorization/authorize.service';
 import jwtDecode from 'jwt-decode';
 import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
-import { Observable, map } from 'rxjs';
-import { HouseDetailComponent } from '../house-detail/house-detail.component';
 
 
 @Component({
@@ -58,7 +56,7 @@ export class ApartmentComponent implements OnInit {
 
   ngOnInit() {
     this.manager();
-    this.residentApartment();
+    this.UserResidentsCheck();
     this.initializeFormEdit();
     this.initializeFormCreate();
     this.getApartments();
@@ -114,17 +112,41 @@ export class ApartmentComponent implements OnInit {
       },
     });
   }
-
-  residentApartment() {
-    this.route.params.subscribe(params => {
-      this.apartmentId = +params['id'];
-    });
-    this.getApartmentsResidents(this.apartmentId);
+  UserResidentsCheck() {
     this.AuthorizeService.getUser().subscribe(data => {
       if (data && data.name) {
         this.currentUser = data.name;
       }
     });
+    this.AuthorizeService.getAccessToken().subscribe(
+      (userRole: string | null) => {
+        if (userRole !== null && !this.isManager) {
+          const token: any = jwtDecode(userRole);
+          const residentId = token.residentid;
+          console.log()
+          this.houseService.GetResidentById(residentId).subscribe((resident: Resident) => {
+            this.residents = [resident];
+          });
+      
+        }
+        else{
+          this.residentApartment();
+        }
+      }
+    );
+    
+  }
+  
+  
+  
+  
+  residentApartment() {
+    this.route.params.subscribe(params => {
+      this.apartmentId = +params['id'];
+    });
+    this.getApartmentsResidents(this.apartmentId);
+  
+
   }
   openCreateResidentModal() {
     const modalRef = this.modalService.open(this.CreateModal);
@@ -143,8 +165,8 @@ export class ApartmentComponent implements OnInit {
   }
   onFormSubmitCreate() {
     if (this.ResidentCreate.valid) {
-      const resdident: Resident = this.ResidentCreate.value as Resident;
-      this.houseService.CreateResident(resdident).subscribe(
+      const resident: Resident = this.ResidentCreate.value as Resident;
+      this.houseService.CreateResident(resident).subscribe(
       );
       this.closeModalAndRefresh();
     }

@@ -18,7 +18,6 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 export class AllHousesComponent {
   @ViewChild('editModal') editModal!: ElementRef;
   @ViewChild('CreateModal') CreateModal!: ElementRef;
-  @ViewChild('CreateModal') TestModal!: ElementRef;
   HouseEdit!: FormGroup;
   HouseCreate!: FormGroup;
 

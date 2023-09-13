@@ -82,7 +82,7 @@
             </div>
           </div>
 
-          <button type="submit" class="btn btn-info">Update</button>
+          <button type="submit" class="btn btn-info" [disabled]="!(isManager)">Update</button>
           <button type="button" class="btn btn-danger" *ngIf="isManager" (click)="Delete()">Delete</button>
           <button class="btn btn-warning"(click)="closeModalAndRefresh()">Cancel</button>
         </form>
@@ -141,8 +141,8 @@
                 class="text-danger small">Street is required</div>
             </div>
           </div>
-          <button type="submit" class="btn btn-info">Add</button>
-          <button class="btn btn-warning"(click)="closeModalAndRefresh()">Cancel</button>
+          <button type="submit" class="btn btn-info" [disabled]="!(isManager)">Add</button>
+          <button class="btn btn-warning" [disabled]="!(isManager)" (click)="closeModalAndRefresh()">Cancel</button>
         </form>
       </div>
     </div>

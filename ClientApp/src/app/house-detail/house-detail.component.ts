@@ -9,6 +9,7 @@ import jwtDecode from 'jwt-decode';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
 import { switchMap } from 'rxjs';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 @Injectable({
   providedIn: 'root',
 })
@@ -20,13 +21,13 @@ import { switchMap } from 'rxjs';
 export class HouseDetailComponent implements OnInit {
   @ViewChild('editModal') editModal!: ElementRef;
   @ViewChild('CreateModal') CreateModal!: ElementRef;
-
+  apartmentCreateForm!: FormGroup;
+  apartmentEditForm!: FormGroup;
   houseId!: number;
   activeModals: NgbModalRef[] = [];
   isManager: boolean = false;
   isResident: boolean = false;
   apartmentId!: number;
-  house!: House;
   apartments!: Apartment[];
   selectedHouse!: number;
   housesselector: House[] = [];
@@ -38,26 +39,20 @@ export class HouseDetailComponent implements OnInit {
     country: '',
     postcode: '',
   };
-  apartmentdetails: Apartment = {
-    id: 0,
-    number: 0,
-    floor: 0,
-    numberOfRooms: 0,
-    population: 0,
-    fullArea: 0,
-    livingSpace: 0,
-    houseId: 0,
-  };
+
 
   constructor(
     public modalService: NgbModal,
     private route: ActivatedRoute,
     private router: Router,
     private houseService: HomesApiService,
+    private formBuilder: FormBuilder,
     private AuthorizeService: AuthorizeService
   ) { }
   ngOnInit(): void {
     this.manager();
+    this.initializeFormEdit();
+    this.initializeFormCreate();
     this.UserApartmentsCheck();
     this.getHouses();
   }
@@ -68,7 +63,6 @@ export class HouseDetailComponent implements OnInit {
         if (userRole !== null && !this.isManager) {
           const token: any = jwtDecode(userRole);
           const houseId = token.houseid;
-
           this.houseService
             .GetApartmentById(houseId)
             .subscribe((apartment: Apartment) => {
@@ -95,6 +89,82 @@ export class HouseDetailComponent implements OnInit {
     );
   }
 
+
+  initializeFormEdit() {
+    this.apartmentEditForm = this.formBuilder.group({
+      id: [null, Validators.required],
+      number: [null, Validators.required],
+      floor: [null, Validators.required],
+      numberOfRooms: [null, Validators.required],
+      population: [null, Validators.required],
+      fullArea: [null, Validators.required],
+      livingSpace: [null, Validators.required],
+      houseId: [null, Validators.required],
+    });
+  }
+
+  initializeFormCreate() {
+    this.apartmentCreateForm = this.formBuilder.group({
+      id: [null, Validators.required],
+      number: [null, Validators.required],
+      floor: [null, Validators.required],
+      numberOfRooms: [null, Validators.required],
+      population: [null, Validators.required],
+      fullArea: [null, Validators.required],
+      livingSpace: [null, Validators.required],
+      houseId: [null, Validators.required],
+    });
+  }
+
+
+  openEditApartmentModal(apartmentId: number) {
+    this.apartmentId = apartmentId;
+    const modalRef = this.modalService.open(this.editModal);
+    this.activeModals.push(modalRef);
+    this.getApartmentDetails(this.apartmentId).subscribe({
+      next: (response: Apartment) => {
+        this.apartmentEditForm.setValue({
+          id: response.id,
+          number: response.number,
+          floor: response.floor,
+          numberOfRooms: response.numberOfRooms,
+          population: response.population,
+          fullArea: response.fullArea,
+          livingSpace: response.livingSpace,
+          houseId: response.houseId,
+        });
+        this.apartmentEditForm.markAsPristine();
+        this.apartmentEditForm.markAsUntouched();
+      },
+    });
+  }
+
+
+  onFormSubmitEdit() {
+    if (this.apartmentEditForm.valid) {
+      const formData = this.apartmentEditForm.value;
+      const apartmentId = formData.id;
+
+      this.houseService.UpdateApartment(apartmentId, formData).subscribe({
+        next: () => {
+        }
+      });
+      this.closeModalAndRefresh();
+
+    }
+  }
+
+
+  onFormSubmitCreate() {
+    if (this.apartmentCreateForm.valid) {
+      const apartment: Apartment = this.apartmentCreateForm.value as Apartment;
+      this.houseService.CreateApartment(apartment).subscribe(
+      );
+      this.closeModalAndRefresh();
+    }
+  }
+
+
   getHouses() {
     this.houseService.getAllHouses().subscribe((data: House[]) => {
       this.housesselector = data;
@@ -111,17 +181,6 @@ export class HouseDetailComponent implements OnInit {
     return this.houseService.getHouseById(houseId);
   }
 
-  openEditModal(apartmentId: number) {
-    this.apartmentId = apartmentId;
-    const modalRef = this.modalService.open(this.editModal);
-    this.activeModals.push(modalRef);
-
-    this.getApartmentDetails(this.apartmentId).subscribe({
-      next: (response: Apartment) => {
-        this.apartmentdetails = response;
-      },
-    });
-  }
 
   getApartmentsByHouseId(houseId: number) {
     this.houseService.GetHouseApartments(houseId).subscribe(
@@ -152,24 +211,12 @@ export class HouseDetailComponent implements OnInit {
   }
 
   openCreateModal() {
-    this.apartmentdetails = {} as Apartment;
     const modalRef = this.modalService.open(this.CreateModal);
     this.activeModals.push(modalRef);
   }
-  CreateApartment(apartmentdetails: Apartment) {
-    this.houseService
-      .CreateApartment(this.apartmentdetails)
-      .subscribe(() => { });
-    this.closeModalAndRefresh();
-  }
-  checkAndUpdateApartment(apartment: Apartment) {
-    this.houseService
-      .UpdateApartment(this.apartmentdetails.id, this.apartmentdetails)
-      .subscribe(() => { });
-    this.closeModalAndRefresh();
-  }
 
-  async Delete(apartmentId: number) {
+  async Delete() {
+    const apartmentId = this.apartmentEditForm.get('id')?.value;
     const result = this.openConfirmationModal();
     if (await result) {
       this.deletApartment(this.apartmentId);
@@ -202,10 +249,7 @@ export class HouseDetailComponent implements OnInit {
       modalRef.dismiss();
     });
     this.activeModals = [];
-    this.router
-      .navigateByUrl('/', { skipLocationChange: true })
-      .then(() =>
-        this.router.navigate(['house/' + this.apartmentdetails.houseId])
-      );
+    location.reload();
+
   }
 }
