@@ -3,115 +3,148 @@
   <div class="form-group">
     <label for="citySearch">Search by Street:</label>
     <input type="text" [(ngModel)]="filterValue" (input)="onFilterInputChange()">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Number</th>
-        <th>Street</th>
-        <th>City</th>
-        <th>Country</th>
-        <th>Postcode</th>
-        <th>View</th>
-        <th>Edit</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let house of filteredHouses">
-        <td>{{ house.number }}</td>
-        <td>{{ house.street }}</td>
-        <td>{{ house.city }}</td>
-        <td>{{ house.country }}</td>
-        <td>{{ house.postcode }}</td>
-        <td><a class="btn btn-info" [routerLink]="['/house', house.id]">View</a></td>
-        <td><button class="btn btn-success" [disabled]="!isManager"
-            (click)="(openEditModal(house.id))">Edit</button></td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="row-sm-3">
-    <button class="btn btn-warning col-sm-12" [disabled]="!isManager" (click)="(openCreateModal())">Add House</button>
-  </div>
-</div>
-<ng-template #editModal>
-  <div class="container">
-    <h2>House</h2>
-    <div class="">
-      <form #form="ngForm" >
-        <div class="form-group row ">
-        <div class="col-sm-3 ">
-          <label for="id" class="form-label">Id</label>
-          <input type="number" class="form-control form-control-sm" id="id" name="id" [(ngModel)]="housedetails.id" required>
-        </div>
-        <div class="col-sm-3 ">
-          <label for="number" class="form-label">Number</label>
-          <input type="number" class="form-control form-control-sm" id="number" name="number" [(ngModel)]="housedetails.number" required>
-        </div>
-        
-        <div class="col-sm-3 ">
-          <label for="city" class="form-label">City</label>
-          <input type="text" class="form-control form-control-sm" id="city" name="city" [(ngModel)]="housedetails.city">
-        </div>
-        <div class="col-sm-3 ">
-          <label for="country" class="form-label">Country</label>
-          <input type="text" class="form-control form-control-sm" id="country" name="country" [(ngModel)]="housedetails.country">
-        </div>
-        <div class="col-sm-3 ">
-          <label for="postcode" class="form-label">Postcode</label>
-          <input type="text" class="form-control form-control-sm" id="postcode" name="postcode" [(ngModel)]="housedetails.postcode">
-        </div>
-        <div class="col-sm-6 ">
-          <label for="street" class="form-label">Street</label>
-          <input type="text" class="form-control form-control-sm" id="street" name="street" [(ngModel)]="housedetails.street">
-        </div>
-        <div class="row-sm-3">
-          <button class="btn btn-info" (click)="UpdateHouse(housedetails)">Save</button>
-          <button class="btn btn-danger" (click)="Delete(housedetails.id)">Delete</button>
-          <button class="btn btn-warning"(click)="closeModalAndRefresh()">Cancel</button>
-        </div>
-      </div>
-      </form>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Number</th>
+          <th>Street</th>
+          <th>City</th>
+          <th>Country</th>
+          <th>Postcode</th>
+          <th>View</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let house of filteredHouses">
+          <td>{{ house.number }}</td>
+          <td>{{ house.street }}</td>
+          <td>{{ house.city }}</td>
+          <td>{{ house.country }}</td>
+          <td>{{ house.postcode }}</td>
+          <td><a class="btn btn-info" [routerLink]="['/house', house.id]">View</a></td>
+          <td><button class="btn btn-success" [disabled]="!isManager" (click)="(openEditModal(house.id))">Edit</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="row-sm-3">
+      <button class="btn btn-warning col-sm-12" [disabled]="!isManager" (click)="(openCreateModal())">Add House</button>
     </div>
   </div>
-</ng-template>
+  <ng-template #editModal>
+    <div class="container">
+      <h2>House</h2>
+      <div class="">
+        <form [formGroup]="HouseEdit" (ngSubmit)="onFormSubmitEdit()">
+          <div class="form-group row">
+            <div class="col-sm-3">
+              <label for="id" class="form-label">Id</label>
+              <input type="number" class="form-control form-control-sm" id="id" formControlName="id" required>
+              <div *ngIf="HouseEdit.get('id')?.hasError('required') && HouseEdit.get('id')?.touched"
+                class="text-danger small">Id is required</div>
+            </div>
 
+            <div class="col-sm-3">
+              <label for="number" class="form-label">Number</label>
+              <input type="number" class="form-control form-control-sm" id="number" formControlName="number" required>
+              <div *ngIf="HouseEdit.get('number')?.hasError('required') && HouseEdit.get('number')?.touched"
+                class="text-danger small">Number is required</div>
+            </div>
 
-<ng-template #CreateModal>
-  <div class="container">
-    <h2>House</h2>
-    <div class="">
-      <form #form="ngForm" >
-        <div class="form-group row ">
-        <div class="col-sm-3 ">
-          <label for="id" class="form-label">Id</label>
-          <input type="number" class="form-control form-control-sm" id="id" name="id" [(ngModel)]="housedetails.id" required>
-        </div>
-        <div class="col-sm-3 ">
-          <label for="number" class="form-label">Number</label>
-          <input type="number" class="form-control form-control-sm" id="number" name="number" [(ngModel)]="housedetails.number" required>
-        </div>
-        
-        <div class="col-sm-3 ">
-          <label for="city" class="form-label">City</label>
-          <input type="text" class="form-control form-control-sm" id="city" name="city" [(ngModel)]="housedetails.city">
-        </div>
-        <div class="col-sm-3 ">
-          <label for="country" class="form-label">Country</label>
-          <input type="text" class="form-control form-control-sm" id="country" name="country" [(ngModel)]="housedetails.country">
-        </div>
-        <div class="col-sm-3 ">
-          <label for="postcode" class="form-label">Postcode</label>
-          <input type="text" class="form-control form-control-sm" id="postcode" name="postcode" [(ngModel)]="housedetails.postcode">
-        </div>
-        <div class="col-sm-6 ">
-          <label for="street" class="form-label">Street</label>
-          <input type="text" class="form-control form-control-sm" id="street" name="street" [(ngModel)]="housedetails.street">
-        </div>
-        <div class="row-sm-3">
-          <button class="btn btn-info" (click)="CreateHouse(housedetails)">Create</button>
+            <div class="col-sm-3">
+              <label for="city" class="form-label">City</label>
+              <input type="text" class="form-control form-control-sm" id="city" formControlName="city" required>
+              <div *ngIf="HouseEdit.get('city')?.hasError('required') && HouseEdit.get('city')?.touched"
+                class="text-danger small">City is required</div>
+            </div>
+
+            <div class="col-sm-3">
+              <label for="country" class="form-label">Country</label>
+              <input type="text" class="form-control form-control-sm" id="country" formControlName="country" required>
+              <div *ngIf="HouseEdit.get('country')?.hasError('required') && HouseEdit.get('country')?.touched"
+                class="text-danger small">Country is required</div>
+
+            </div>
+
+            <div class="col-sm-3">
+              <label for="postcode" class="form-label">Postcode</label>
+              <input type="text" class="form-control form-control-sm" id="postcode" formControlName="postcode" required>
+              <div *ngIf="HouseEdit.get('postcode')?.hasError('required') && HouseEdit.get('postcode')?.touched"
+                class="text-danger small">Postcode is required</div>
+            </div>
+
+            <div class="col-sm-6">
+              <label for="street" class="form-label">Street</label>
+              <input type="text" class="form-control form-control-sm" id="street" formControlName="street" required>
+              <div *ngIf="HouseEdit.get('street')?.hasError('required') && HouseEdit.get('street')?.touched"
+                class="text-danger small">Street is required</div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-info">Update</button>
+          <button type="button" class="btn btn-danger" *ngIf="isManager" (click)="Delete()">Delete</button>
           <button class="btn btn-warning"(click)="closeModalAndRefresh()">Cancel</button>
-        </div>
+        </form>
       </div>
-      </form>
     </div>
-  </div>
-</ng-template>
+  </ng-template>
+
+
+
+  <ng-template #CreateModal>
+    <div class="container">
+      <h2>House</h2>
+      <div class="">
+        <form [formGroup]="HouseCreate" (ngSubmit)="onFormSubmitCreate()">
+          <div class="form-group row">
+            <div class="col-sm-3">
+              <label for="id" class="form-label">Id</label>
+              <input type="number" class="form-control form-control-sm" id="id" formControlName="id" required>
+              <div *ngIf="HouseCreate.get('id')?.hasError('required') && HouseCreate.get('id')?.touched"
+                class="text-danger small">Id is required</div>
+            </div>
+
+            <div class="col-sm-3">
+              <label for="number" class="form-label">Number</label>
+              <input type="number" class="form-control form-control-sm" id="number" formControlName="number" required>
+              <div *ngIf="HouseCreate.get('number')?.hasError('required') && HouseCreate.get('number')?.touched"
+                class="text-danger small">Number is required</div>
+            </div>
+
+            <div class="col-sm-3">
+              <label for="city" class="form-label">City</label>
+              <input type="text" class="form-control form-control-sm" id="city" formControlName="city" required>
+              <div *ngIf="HouseCreate.get('city')?.hasError('required') && HouseCreate.get('city')?.touched"
+                class="text-danger small">City is required</div>
+            </div>
+
+            <div class="col-sm-3">
+              <label for="country" class="form-label">Country</label>
+              <input type="text" class="form-control form-control-sm" id="country" formControlName="country" required>
+              <div *ngIf="HouseCreate.get('country')?.hasError('required') && HouseCreate.get('country')?.touched"
+                class="text-danger small">Country is required</div>
+
+            </div>
+
+            <div class="col-sm-3">
+              <label for="postcode" class="form-label">Postcode</label>
+              <input type="text" class="form-control form-control-sm" id="postcode" formControlName="postcode" required>
+              <div *ngIf="HouseCreate.get('postcode')?.hasError('required') && HouseCreate.get('postcode')?.touched"
+                class="text-danger small">Postcode is required</div>
+            </div>
+
+            <div class="col-sm-6">
+              <label for="street" class="form-label">Street</label>
+              <input type="text" class="form-control form-control-sm" id="street" formControlName="street" required>
+              <div *ngIf="HouseCreate.get('street')?.hasError('required') && HouseCreate.get('street')?.touched"
+                class="text-danger small">Street is required</div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-info">Add</button>
+          <button class="btn btn-warning"(click)="closeModalAndRefresh()">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+ 

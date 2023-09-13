@@ -16,7 +16,6 @@ export class HomesApiService {
   getAllHouses(): Observable<House[]> {
     return this.http.get<House[]>(`${this.apiUrl}/houses`);
   }
-
   getHouseById(id: number): Observable<House> {
     return this.http.get<House>(`${this.apiUrl}/houses/${id}`);
   }

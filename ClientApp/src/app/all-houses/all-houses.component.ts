@@ -8,6 +8,7 @@ import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-all-houses',
@@ -17,7 +18,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class AllHousesComponent {
   @ViewChild('editModal') editModal!: ElementRef;
   @ViewChild('CreateModal') CreateModal!: ElementRef;
+  @ViewChild('CreateModal') TestModal!: ElementRef;
   HouseEdit!: FormGroup;
+  HouseCreate!: FormGroup;
+
   filterValue = '';
   activeModals: NgbModalRef[] = [];
   housesId!: number;
@@ -39,16 +43,112 @@ export class AllHousesComponent {
     public modalService: NgbModal,
     private router: Router,
     private AuthorizeService: AuthorizeService,
+    private formBuilder: FormBuilder 
+
   ) {
   }
   ngOnInit(): void {
     this.manager();
+    this.initializeFormEdit();
+    this.initializeFormCreate();
     this.checkAutorization();
     this.filterInput.pipe().subscribe((filterValue) => {
       this.applyFilter(filterValue);
     });
 
   }
+
+
+
+  initializeFormEdit() {
+    this.HouseEdit = this.formBuilder.group({
+      id: [null, Validators.required],
+      number: [null, Validators.required],
+      city: [null, Validators.required],
+      country: [null, Validators.required],
+      postcode: [null, Validators.required],
+      street: [null, Validators.required],
+    });
+  }
+
+  initializeFormCreate() {
+    this.HouseCreate = this.formBuilder.group({
+      id: [null, Validators.required],
+      number: [null, Validators.required],
+      city: [null, Validators.required],
+      country: [null, Validators.required],
+      postcode: [null, Validators.required],
+      street: [null, Validators.required],
+    });
+  }
+
+  openEditModal(housesId: number) {
+    this.housesId = housesId;
+    const modalRef = this.modalService.open(this.editModal);
+    this.activeModals.push(modalRef);
+
+    this.getHousesDetails(this.housesId).subscribe({
+      next: (response: House) => {
+        this.housedetails = response;
+        this.HouseEdit.setValue({
+          id: response.id,
+          number: response.number,
+          city: response.city,
+          country: response.country,
+          postcode: response.postcode,
+          street: response.street,
+        });
+      },
+    });
+  }
+
+  onFormSubmitEdit() {
+    if (this.HouseEdit.valid) {
+      const formData = this.HouseEdit.value;
+      const houseId = formData.id;
+      this.houseService.UpdateHouse(houseId, formData).subscribe((response) => {
+      });
+      this.closeModalAndRefresh();
+
+    }
+  }
+
+  async Delete() {
+    const houseId = this.HouseEdit.get('id')?.value;
+    const result = this.openConfirmationModal();
+    if (await result) {
+      this.deleteHouse(houseId)
+    } else {
+    }
+  }
+  deleteHouse(houseId: number) {
+    this.houseService.DeleteHouse(houseId).subscribe({
+      next: (response) => {
+        this.router.navigate(['all-houses'])
+        this.closeModalAndRefresh();
+      }
+    })
+  
+  }
+  openConfirmationModal(): Promise<boolean> {
+    const modalRef: NgbModalRef = this.modalService.open(DeleteConfirmationModalComponent);
+    return modalRef.result.then((result) => {
+      return result === true;
+    }).catch(() => {
+      return false;
+    });
+  }
+
+  onFormSubmitCreate(){
+    if (this.HouseCreate.valid) {
+      const newHouse: House = this.HouseCreate.value as House;
+      this.houseService.CreateHouse(newHouse).subscribe(
+
+      );
+      this.closeModalAndRefresh();
+    }
+  }
+  
   checkAutorization() {
     this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
       if (userRole !== null && !this.isManager) {
@@ -90,47 +190,11 @@ applyFilter(filterValue: string) {
     return this.houseService.getHouseById(housesId);
   }
 
-  openEditModal(housesId: number) {
-    this.housesId = housesId;
-    const modalRef = this.modalService.open(this.editModal);
-    this.activeModals.push(modalRef);
-
-    this.getHousesDetails(this.housesId).subscribe({
-      next: (response: House) => {
-        this.housedetails = response;
-      }
-    });
-  }
-  openCreateModal(){
-    this.housedetails = {} as House;
+  openCreateModal() {
+    this.HouseCreate.reset();
     const modalRef = this.modalService.open(this.CreateModal);
     this.activeModals.push(modalRef);
   }
-  CreateHouse(houseService:House){
-    this.houseService.CreateHouse(this.housedetails).subscribe({
-      next: (createdHouse) => {           
-      }
-    });
-    this.closeModalAndRefresh();
-  }
-
-    UpdateHouse(house: House) {      
-      this.houseService.UpdateHouse(this.housedetails.id, this.housedetails).subscribe({
-        next: (response) => {
-        }
-      }); 
-    this.closeModalAndRefresh();
-  
-}
-deleteHouse(houseId: number) {
-  this.houseService.DeleteHouse(houseId).subscribe({
-    next: (response) => {
-      this.router.navigate(['all-houses'])
-      this.closeModalAndRefresh();
-    }
-  })
-
-}
 
   manager(): void {
     this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
@@ -144,25 +208,6 @@ deleteHouse(houseId: number) {
         this.isManager = false;
         this.isResident = false;
       }
-    });
-  }
-
-
-  async Delete(houseId: number) {
-    const result = this.openConfirmationModal();
-    if (await result) {
-      this.deleteHouse(houseId)
-    } else {
-    }
-  }
-
-  openConfirmationModal(): Promise<boolean> {
-    const modalRef: NgbModalRef = this.modalService.open(DeleteConfirmationModalComponent);
-
-    return modalRef.result.then((result) => {
-      return result === true;
-    }).catch(() => {
-      return false;
     });
   }
 
