@@ -3,7 +3,7 @@ import { Apartment } from './../Models/apartment.model';
 import { Resident } from './../Models/resident.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HomesApiService } from '../Services/homes-api.service';
-import { FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AuthorizeService, IUser } from 'src/api-authorization/authorize.service';
@@ -25,7 +25,8 @@ import { HouseDetailComponent } from '../house-detail/house-detail.component';
 export class ApartmentComponent implements OnInit {
   @ViewChild('editModal') editModal!: ElementRef;
   @ViewChild('CreateModal') CreateModal!: ElementRef;
-
+  ResidentEdit!: FormGroup;
+  ResidentCreate!: FormGroup;
   apartmentId!: number;
   residentId!: number;
   isManager: boolean = false;
@@ -34,16 +35,7 @@ export class ApartmentComponent implements OnInit {
   activeModals: NgbModalRef[] = [];
   residents!: Resident[];
   currentUser: any;
-  apartmentdetails: Apartment = {
-    id: 0,
-    number: 0,
-    floor: 0,
-    numberOfRooms: 0,
-    population: 0,
-    fullArea: 0,
-    livingSpace: 0,
-    houseId: 0
-  }
+
   residentdetails: Resident = {
     id: 0,
     name: '',
@@ -60,12 +52,70 @@ export class ApartmentComponent implements OnInit {
     private houseService: HomesApiService,
     private route: ActivatedRoute,
     private router: Router,
+    private formBuilder: FormBuilder,
     private AuthorizeService: AuthorizeService,
   ) { }
 
   ngOnInit() {
     this.manager();
+    this.residentApartment();
+    this.initializeFormEdit();
+    this.initializeFormCreate();
     this.getApartments();
+
+
+  }
+  initializeFormEdit() {
+    this.ResidentEdit = this.formBuilder.group({
+      id: ['', Validators.required],
+      name: ['', Validators.required],
+      surname: ['', Validators.required],
+      personalCode: ['', Validators.required],
+      dateOfBirth: ['', Validators.required],
+      phone: ['', Validators.required],
+      email: ['', Validators.required],
+      isOwner: [false],
+      apartmentId: ['']
+    });
+  }
+
+  initializeFormCreate() {
+    this.ResidentCreate = this.formBuilder.group({
+      id: ['', Validators.required],
+      name: ['', Validators.required],
+      surname: ['', Validators.required],
+      personalCode: ['', Validators.required],
+      dateOfBirth: ['', Validators.required],
+      phone: ['', Validators.required],
+      email: ['', Validators.required],
+      isOwner: [false],
+      apartmentId: ['']
+    });
+  }
+  openEditResidentModal(residentId: number) {
+    this.residentId = residentId;
+    const modalRef = this.modalService.open(this.editModal);
+    this.activeModals.push(modalRef);
+
+    this.getResidentDetails(this.residentId).subscribe({
+      next: (response: Resident) => {
+        this.residentdetails = response;
+        this.ResidentEdit.patchValue({
+          id: response.id,
+          name: response.name,
+          surname: response.surname,
+          personalCode: response.personalCode,
+          dateOfBirth: response.dateOfBirth,
+          phone: response.phone,
+          email: response.email,
+          isOwner: response.isOwner,
+          apartmentId: response.apartmentId
+        });
+      },
+    });
+  }
+
+  residentApartment() {
     this.route.params.subscribe(params => {
       this.apartmentId = +params['id'];
     });
@@ -75,19 +125,38 @@ export class ApartmentComponent implements OnInit {
         this.currentUser = data.name;
       }
     });
-    
   }
-  
+  openCreateResidentModal() {
+    const modalRef = this.modalService.open(this.CreateModal);
+    this.activeModals.push(modalRef);
+  }
+
+
+  onFormSubmitEdit() {
+    if (this.ResidentEdit.valid) {
+      const formData = this.ResidentEdit.value;
+      const residentId = formData.id;
+      this.houseService.UpdateResident(residentId, formData).subscribe((response) => {
+        this.closeModalAndRefresh();
+      });
+    }
+  }
+  onFormSubmitCreate() {
+    if (this.ResidentCreate.valid) {
+      const resdident: Resident = this.ResidentCreate.value as Resident;
+      this.houseService.CreateResident(resdident).subscribe(
+      );
+      this.closeModalAndRefresh();
+    }
+  }
+
+
   getApartments() {
     this.houseService.getAllApartments().subscribe((data: Apartment[]) => {
-      this.apartments = data; 
+      this.apartments = data;
     });
   }
 
-  getAllApartments() {
-    return this.houseService.getAllApartments();
-  }
-  
   getResidentDetails(residentId: number) {
     return this.houseService.GetResidentById(residentId);
   }
@@ -96,32 +165,11 @@ export class ApartmentComponent implements OnInit {
     this.houseService.GetApartmentsResident(Apartmentid).subscribe(
       (residents: Resident[]) => {
         this.residents = residents;
-       
+
       },
     );
   }
-  openCreateModal(){
-    this.residentdetails = {} as Resident;
-    const modalRef = this.modalService.open(this.CreateModal);
-    this.activeModals.push(modalRef);
-  }
-  openEditModal(residentId: number) {
-    this.residentId = residentId;
-    const modalRef = this.modalService.open(this.editModal);
-    this.activeModals.push(modalRef);
-    this.getAllApartments();
-    this.getResidentDetails(this.residentId).subscribe({
-      next: (response: Resident) => {
-        this.residentdetails = response;
-      }
-    });
 
-  }
-  CreateResident(residentdetails:Resident){
-    this.houseService.CreateResident(this.residentdetails).subscribe(() => {
-    });
-    this.closeModalAndRefresh();
-  }
   manager(): void {
     this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
       if (userRole !== null) {
@@ -137,30 +185,17 @@ export class ApartmentComponent implements OnInit {
     });
   }
 
-  checkAndUpdateHouse(resdident: Resident) {
-    const houseNumberToCheck = resdident.personalCode;
-    this.houseService.doesResidentExistByNumber(houseNumberToCheck, resdident.apartmentId).subscribe((exists) => {
-      if (exists) {
-        this.houseService.UpdateResident(this.residentdetails.id, this.residentdetails).subscribe(() => {
-        });
-      } else if (!exists && this.isManager) {
-        this.houseService.CreateResident(this.residentdetails).subscribe(() => {
-        });
-      }
-    });
-    this.closeModalAndRefresh();
 
-  }
-
-
-  async Delete(resdidentid: number) {
+  async Delete() {
+    const residentId = this.ResidentEdit.get('id')?.value;
     const result = this.openConfirmationModal();
     if (await result) {
-      this.deleteResident(resdidentid)
+      this.deleteResident(this.residentId)
     } else {
     }
   }
   deleteResident(residentId: number) {
+
     this.houseService.DeleteResident(residentId).subscribe({
       next: (response) => {
         this.closeModalAndRefresh();
@@ -185,8 +220,8 @@ export class ApartmentComponent implements OnInit {
     this.activeModals = [];
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
       this.router.navigate(['apartments/' + this.residentdetails.apartmentId + '/residents']))
-      location.reload();
+    location.reload();
   }
-   
+
 
 }

@@ -1,13 +1,11 @@
 <div class="container">
-  <h2>Apartment:{{apartmentdetails.number}}</h2>
-
-
+  <h2>Apartment:</h2>
 
 </div>
 <div class="container">
   <table class="table">
   </table>
-  <h2>Residents   <button class="btn btn-warning"  (click)="openCreateModal()">Add Resident</button>
+  <h2>Residents <button class="btn btn-warning" (click)="openCreateResidentModal()">Add Resident</button>
   </h2>
   <table class="table">
     <thead>
@@ -37,7 +35,7 @@
         <td>{{ resident.apartmentId }}</td>
         <td>
           <button class="btn btn-success" [disabled]="!(isManager || resident.email === currentUser)"
-            (click)="openEditModal(resident.id)">Edit</button>
+            (click)="openEditResidentModal(resident.id)">Edit</button>
         </td>
       </tr>
     </tbody>
@@ -47,108 +45,133 @@
 </div>
 
 <ng-template #editModal>
-
   <div class="container">
     <h2>Resident Details</h2>
     <div>
-      <form #form="ngForm" >
+      <form [formGroup]="ResidentEdit">
         <div class="mb-3">
-            <label for="name" class="form-label">Id:</label>
-            <input type="text" class="form-control" id="id" name="id" [(ngModel)]="residentdetails.id" required>
-          </div>
+          <label for="id" class="form-label">Id:</label>
+          <input type="text" class="form-control" id="id" formControlName="id" required>
+          <div *ngIf="ResidentEdit.get('id')?.hasError('required') && ResidentEdit.get('id')?.touched"
+            class="text-danger small">Id is required</div>
+        </div>
         <div class="mb-3">
           <label for="name" class="form-label">Name:</label>
-          <input type="text" class="form-control" id="name" name="name" [(ngModel)]="residentdetails.name" required>
+          <input type="text" class="form-control" id="name" formControlName="name" required>
+          <div *ngIf="ResidentEdit.get('name')?.hasError('required') && ResidentEdit.get('name')?.touched"
+            class="text-danger small">Name is required</div>
         </div>
         <div class="mb-3">
           <label for="surname" class="form-label">Surname:</label>
-          <input type="text" class="form-control" id="surname" name="surname" [(ngModel)]="residentdetails.surname" required>
+          <input type="text" class="form-control" id="surname" formControlName="surname" required>
+          <div *ngIf="ResidentEdit.get('surname')?.hasError('required') && ResidentEdit.get('surname')?.touched"
+            class="text-danger small">Surname is required</div>
         </div>
         <div class="mb-3">
           <label for="personalCode" class="form-label">Personal Code:</label>
-          <input type="text" class="form-control" id="personalCode" name="personalCode" [(ngModel)]="residentdetails.personalCode" required>
+          <input type="text" class="form-control" id="personalCode" formControlName="personalCode" required>
+          <div
+            *ngIf="ResidentEdit.get('personalCode')?.hasError('required') && ResidentEdit.get('personalCode')?.touched"
+            class="text-danger small">Personal Code is required</div>
         </div>
         <div class="mb-3">
           <label for="dateOfBirth" class="form-label">Date of Birth:</label>
-          <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" [(ngModel)]="residentdetails.dateOfBirth" required>
+          <input type="date" class="form-control" id="dateOfBirth" formControlName="dateOfBirth" required>
+          <div *ngIf="ResidentEdit.get('dateOfBirth')?.hasError('required') && ResidentEdit.get('dateOfBirth')?.touched"
+            class="text-danger small">Date of Birth is required</div>
         </div>
         <div class="mb-3">
           <label for="phone" class="form-label">Phone:</label>
-          <input type="text" class="form-control" id="phone" name="phone" [(ngModel)]="residentdetails.phone" required>
+          <input type="text" class="form-control" id="phone" formControlName="phone" required>
+          <div *ngIf="ResidentEdit.get('phone')?.hasError('required') && ResidentEdit.get('phone')?.touched"
+            class="text-danger small">Phone is required</div>
         </div>
         <div class="mb-3">
           <label for="email" class="form-label">Email:</label>
-          <input type="email" class="form-control" id="email" name="email" [(ngModel)]="residentdetails.email" required>
+          <input type="email" class="form-control" id="email" formControlName="email" required>
+          <div *ngIf="ResidentEdit.get('email')?.hasError('required') && ResidentEdit.get('email')?.touched"
+            class="text-danger small">Email is required</div>
         </div>
-  
         <div class="mb-3 form-check">
-          <input type="checkbox" class="form-check-input" id="isOwner" name="isOwner" [(ngModel)]="residentdetails.isOwner">
+          <input type="checkbox" class="form-check-input" id="isOwner" formControlName="isOwner">
           <label class="form-check-label" for="isOwner">Is Owner</label>
         </div>
-        
         <div class="mb-3 form-check apartmentidclass">
           <label for="apartmentId" class="form-label">ApartmentId:</label>
-          <select name="residentdetails.apartmentId" class="form-select" size="1" [(ngModel)]="residentdetails.apartmentId">
+          <select name="residentdetails.apartmentId" class="form-select" size="1" formControlName="apartmentId">
             <option *ngFor="let apartment of apartments" [value]="apartment.id">{{ apartment.id }}</option>
-          </select>      
+          </select>
         </div>
+        <button type="submit" class="btn btn-info" (click)="onFormSubmitEdit()">Save</button>
+        <button class="btn btn-danger" [disabled]="!(isManager)" (click)="Delete()">Delete</button>
+        <button class="btn btn-warning" (click)="closeModalAndRefresh()">Cancel</button>
       </form>
     </div>
-    <button type="submit" class="btn btn-info" (click)="checkAndUpdateHouse(residentdetails)">Save</button>
-    <button class="btn btn-danger"  [disabled]="!(isManager)" (click)="Delete(residentdetails.id)">Delete</button>
-    <button class="btn btn-warning"(click)="closeModalAndRefresh()">Cancel</button>
   </div>
 </ng-template>
+
 
 <ng-template #CreateModal>
 
   <div class="container">
     <h2>Resident Details</h2>
-    <div>
-      <form #form="ngForm" >
-        <div class="mb-3">
-            <label for="name" class="form-label">Id:</label>
-            <input type="text" class="form-control" id="id" name="id" [(ngModel)]="residentdetails.id" required>
-          </div>
-        <div class="mb-3">
-          <label for="name" class="form-label">Name:</label>
-          <input type="text" class="form-control" id="name" name="name" [(ngModel)]="residentdetails.name" required>
-        </div>
-        <div class="mb-3">
-          <label for="surname" class="form-label">Surname:</label>
-          <input type="text" class="form-control" id="surname" name="surname" [(ngModel)]="residentdetails.surname" required>
-        </div>
-        <div class="mb-3">
-          <label for="personalCode" class="form-label">Personal Code:</label>
-          <input type="text" class="form-control" id="personalCode" name="personalCode" [(ngModel)]="residentdetails.personalCode" required>
-        </div>
-        <div class="mb-3">
-          <label for="dateOfBirth" class="form-label">Date of Birth:</label>
-          <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" [(ngModel)]="residentdetails.dateOfBirth" required>
-        </div>
-        <div class="mb-3">
-          <label for="phone" class="form-label">Phone:</label>
-          <input type="text" class="form-control" id="phone" name="phone" [(ngModel)]="residentdetails.phone" required>
-        </div>
-        <div class="mb-3">
-          <label for="email" class="form-label">Email:</label>
-          <input type="email" class="form-control" id="email" name="email" [(ngModel)]="residentdetails.email" required>
-        </div>
-  
-        <div class="mb-3 form-check">
-          <input type="checkbox" class="form-check-input" id="isOwner" name="isOwner" [(ngModel)]="residentdetails.isOwner">
-          <label class="form-check-label" for="isOwner">Is Owner</label>
-        </div>
-        
-        <div class="mb-3 form-check apartmentidclass">
-          <label for="apartmentId" class="form-label">ApartmentId:</label>
-          <select name="residentdetails.apartmentId" class="form-select" size="1" [(ngModel)]="residentdetails.apartmentId">
-            <option *ngFor="let apartment of apartments" [value]="apartment.id">{{ apartment.id }}</option>
-          </select>      
-        </div>
-      </form>
-    </div>
-    <button type="submit" class="btn btn-info" (click)="CreateResident(residentdetails)">Create</button>
-    <button class="btn btn-warning"(click)="closeModalAndRefresh()">Cancel</button>
+    <form [formGroup]="ResidentCreate">
+      <div class="mb-3">
+        <label for="id" class="form-label">Id:</label>
+        <input type="text" class="form-control" id="id" formControlName="id" required>
+        <div *ngIf="ResidentCreate.get('id')?.hasError('required') && ResidentCreate.get('id')?.touched"
+          class="text-danger small">Id is required</div>
+      </div>
+      <div class="mb-3">
+        <label for="name" class="form-label">Name:</label>
+        <input type="text" class="form-control" id="name" formControlName="name" required>
+        <div *ngIf="ResidentCreate.get('name')?.hasError('required') && ResidentCreate.get('name')?.touched"
+          class="text-danger small">Name is required</div>
+      </div>
+      <div class="mb-3">
+        <label for="surname" class="form-label">Surname:</label>
+        <input type="text" class="form-control" id="surname" formControlName="surname" required>
+        <div *ngIf="ResidentCreate.get('surname')?.hasError('required') && ResidentCreate.get('surname')?.touched"
+          class="text-danger small">Surname is required</div>
+      </div>
+      <div class="mb-3">
+        <label for="personalCode" class="form-label">Personal Code:</label>
+        <input type="text" class="form-control" id="personalCode" formControlName="personalCode" required>
+        <div
+          *ngIf="ResidentCreate.get('personalCode')?.hasError('required') && ResidentCreate.get('personalCode')?.touched"
+          class="text-danger small">Personal Code is required</div>
+      </div>
+      <div class="mb-3">
+        <label for="dateOfBirth" class="form-label">Date of Birth:</label>
+        <input type="date" class="form-control" id="dateOfBirth" formControlName="dateOfBirth" required>
+        <div
+          *ngIf="ResidentCreate.get('dateOfBirth')?.hasError('required') && ResidentCreate.get('dateOfBirth')?.touched"
+          class="text-danger small">Date of Birth is required</div>
+      </div>
+      <div class="mb-3">
+        <label for="phone" class="form-label">Phone:</label>
+        <input type="text" class="form-control" id="phone" formControlName="phone" required>
+        <div *ngIf="ResidentCreate.get('phone')?.hasError('required') && ResidentCreate.get('phone')?.touched"
+          class="text-danger small">Phone is required</div>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email:</label>
+        <input type="email" class="form-control" id="email" formControlName="email" required>
+        <div *ngIf="ResidentCreate.get('email')?.hasError('required') && ResidentCreate.get('email')?.touched"
+          class="text-danger small">Email is required</div>
+      </div>
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="isOwner" formControlName="isOwner">
+        <label class="form-check-label" for="isOwner">Is Owner</label>
+      </div>
+      <div class="mb-3 form-check apartmentidclass">
+        <label for="apartmentId" class="form-label">ApartmentId:</label>
+        <select name="apartmentId" class="form-select" size="1" formControlName="apartmentId">
+          <option *ngFor="let apartment of apartments" [value]="apartment.id">{{ apartment.id }}</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-info" (click)="onFormSubmitCreate()">Create</button>
+      <button class="btn btn-warning" (click)="closeModalAndRefresh()">Cancel</button>
+    </form>
   </div>
 </ng-template>
