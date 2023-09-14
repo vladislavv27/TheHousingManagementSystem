@@ -71,20 +71,17 @@ export class HomesApiService {
   DeleteResident(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/residents/${id}`);
   }
-  UpdateResident(idToUpdate: number, resident: Resident,jwtToken:any): Observable<any> {
-    const role = jwtToken.role;
-    const residentid = jwtToken.residentid; 
+  UpdateResident(idToUpdate: number, resident: Resident,jwtToken:String): Observable<any> {
     const requestBody = {
-      role: role,
-      id: residentid
+      resident: resident,
+      jwtToken: jwtToken,
     };
-    const combinedRequestBody = {
-      ...requestBody,
-      resident: resident
-    };
-    console.log(combinedRequestBody)
-    return this.http.put(`${this.apiUrl}/residents/${idToUpdate}`,combinedRequestBody);
-  }
+  
+    console.log(requestBody);
+  
+   return this.http.put(`${this.apiUrl}/residents/${idToUpdate}`,requestBody);
+}
+
   CreateResident(residentcreate: Resident):Observable<Resident>{
     residentcreate.id=0;
     return this.http.post<Resident>(this.apiUrl+'/residents',residentcreate);

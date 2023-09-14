@@ -138,7 +138,6 @@ export class ApartmentComponent implements OnInit {
   
   
   
-  
   residentApartment() {
     this.route.params.subscribe(params => {
       this.apartmentId = +params['id'];
@@ -154,28 +153,23 @@ export class ApartmentComponent implements OnInit {
 
 
 
-
-
-
   onFormSubmitEdit() {
     if (this.ResidentEdit.valid) {
-      const formData = this.ResidentEdit.value;
-      const residentIdToUpdate = formData.id;
-       this.AuthorizeService.getAccessToken().subscribe(
-          (userRole: string | null) => {
-            if (userRole !== null) {
-              const token: any = jwtDecode(userRole);
-              console.log(token)
-              this.houseService.UpdateResident(residentIdToUpdate, formData,token).subscribe((response) => {
-                this.closeModalAndRefresh();
-              });              
-            }
-          }
-        );
-   
-      
+    this.AuthorizeService.getAccessToken().subscribe(
+      (accessToken: string | null) => {
+        if (accessToken !== null) {
+         const formData = this.ResidentEdit.value;
+          const residentIdToUpdate = formData.id;
+         
+          this.houseService.UpdateResident(residentIdToUpdate, formData,accessToken).subscribe((response) => {
+            this.closeModalAndRefresh();
+          });
+        }
+      }
+    );
     }
-  }
+    }
+  
   onFormSubmitCreate() {
 
     if (this.ResidentCreate.valid) {
