@@ -123,7 +123,6 @@ export class ApartmentComponent implements OnInit {
         if (userRole !== null && !this.isManager) {
           const token: any = jwtDecode(userRole);
           const residentId = token.residentid;
-          console.log()
           this.houseService.GetResidentById(residentId).subscribe((resident: Resident) => {
             this.residents = [resident];
           });
@@ -154,16 +153,31 @@ export class ApartmentComponent implements OnInit {
   }
 
 
+
+
+
+
   onFormSubmitEdit() {
     if (this.ResidentEdit.valid) {
       const formData = this.ResidentEdit.value;
-      const residentId = formData.id;
-      this.houseService.UpdateResident(residentId, formData).subscribe((response) => {
-        this.closeModalAndRefresh();
-      });
+      const residentIdToUpdate = formData.id;
+       this.AuthorizeService.getAccessToken().subscribe(
+          (userRole: string | null) => {
+            if (userRole !== null) {
+              const token: any = jwtDecode(userRole);
+              console.log(token)
+              this.houseService.UpdateResident(residentIdToUpdate, formData,token).subscribe((response) => {
+                this.closeModalAndRefresh();
+              });              
+            }
+          }
+        );
+   
+      
     }
   }
   onFormSubmitCreate() {
+
     if (this.ResidentCreate.valid) {
       const resident: Resident = this.ResidentCreate.value as Resident;
       this.houseService.CreateResident(resident).subscribe(
@@ -200,6 +214,7 @@ export class ApartmentComponent implements OnInit {
 
         this.isManager = role === 'Manager';
         this.isResident = role === 'Resident';
+       
       } else {
         this.isManager = false;
         this.isResident = false;

@@ -1,7 +1,7 @@
 import { Resident } from './../Models/resident.model';
 import { Apartment } from './../Models/apartment.model';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
 import { House } from '../Models/house.model';
 @Injectable({
@@ -10,9 +10,21 @@ import { House } from '../Models/house.model';
 export class HomesApiService {
 
    private apiUrl= 'https://localhost:7281/api'
+  AuthorizeService: any;
 
   constructor(private http: HttpClient) {}
 
+  sendTokenToApi(jwtToken: any) {
+    // Define the HTTP headers with the token
+    const role = jwtToken.role;
+    const id = jwtToken.residentid; // Update this to match the property name in your request
+    const requestBody = {
+      role: role,
+      id: id
+    };
+    const apiUrl = 'https://localhost:7281/api/residents/profile'; // Replace with your API URL
+    return this.http.post(apiUrl, requestBody);
+  }
   getAllHouses(): Observable<House[]> {
     return this.http.get<House[]>(`${this.apiUrl}/houses`);
   }
@@ -59,8 +71,19 @@ export class HomesApiService {
   DeleteResident(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/residents/${id}`);
   }
-  UpdateResident(id: number, resident: Resident): Observable<any> {
-    return this.http.put(`${this.apiUrl}/residents/${id}`, resident);
+  UpdateResident(idToUpdate: number, resident: Resident,jwtToken:any): Observable<any> {
+    const role = jwtToken.role;
+    const residentid = jwtToken.residentid; 
+    const requestBody = {
+      role: role,
+      id: residentid
+    };
+    const combinedRequestBody = {
+      ...requestBody,
+      resident: resident
+    };
+    console.log(combinedRequestBody)
+    return this.http.put(`${this.apiUrl}/residents/${idToUpdate}`,combinedRequestBody);
   }
   CreateResident(residentcreate: Resident):Observable<Resident>{
     residentcreate.id=0;
