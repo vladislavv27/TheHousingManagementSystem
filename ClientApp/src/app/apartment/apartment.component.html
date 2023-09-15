@@ -34,7 +34,7 @@
         <td>{{ resident.isOwner ? 'Yes' : 'No' }}</td>
         <td>{{ resident.apartmentId }}</td>
         <td>
-          <button class="btn btn-success" [disabled]="!(isManager || resident.email === currentUser)"
+          <button class="btn btn-success"
             (click)="openEditResidentModal(resident.id)">Edit</button>
         </td>
       </tr>
@@ -49,9 +49,9 @@
     <h2>Resident Details</h2>
     <div>
       <form [formGroup]="ResidentEdit">
-        <div class="mb-3">
+        <div class="mb-3" required *ngIf="isManager">
           <label for="id" class="form-label">Id:</label>
-          <input type="text" class="form-control" id="id" formControlName="id" required>
+          <input type="text" class="form-control" id="id" [disabled]="true" formControlName="id" required >
           <div *ngIf="ResidentEdit.get('id')?.hasError('required') && ResidentEdit.get('id')?.touched"
             class="text-danger small">Id is required</div>
         </div>
@@ -118,25 +118,25 @@
     <form [formGroup]="ResidentCreate">
       <div class="mb-3">
         <label for="id" class="form-label">Id:</label>
-        <input type="text" class="form-control" id="id" formControlName="id" required>
+        <input type="text" class="form-control" id="id" formControlName="id" required placeholder="1" >
         <div *ngIf="ResidentCreate.get('id')?.hasError('required') && ResidentCreate.get('id')?.touched"
           class="text-danger small">Id is required</div>
       </div>
       <div class="mb-3">
         <label for="name" class="form-label">Name:</label>
-        <input type="text" class="form-control" id="name" formControlName="name" required>
+        <input type="text" class="form-control" id="name" formControlName="name" required placeholder="Vladislavs">
         <div *ngIf="ResidentCreate.get('name')?.hasError('required') && ResidentCreate.get('name')?.touched"
           class="text-danger small">Name is required</div>
       </div>
       <div class="mb-3">
         <label for="surname" class="form-label">Surname:</label>
-        <input type="text" class="form-control" id="surname" formControlName="surname" required>
+        <input type="text" class="form-control" id="surname" formControlName="surname" required placeholder="Mihailovs">
         <div *ngIf="ResidentCreate.get('surname')?.hasError('required') && ResidentCreate.get('surname')?.touched"
           class="text-danger small">Surname is required</div>
       </div>
       <div class="mb-3">
         <label for="personalCode" class="form-label">Personal Code:</label>
-        <input type="text" class="form-control" id="personalCode" formControlName="personalCode" required>
+        <input type="text" class="form-control" id="personalCode" formControlName="personalCode" required placeholder="254334-23131">
         <div
           *ngIf="ResidentCreate.get('personalCode')?.hasError('required') && ResidentCreate.get('personalCode')?.touched"
           class="text-danger small">Personal Code is required</div>
@@ -150,18 +150,18 @@
       </div>
       <div class="mb-3">
         <label for="phone" class="form-label">Phone:</label>
-        <input type="text" class="form-control" id="phone" formControlName="phone" required>
+        <input type="text" class="form-control" id="phone" formControlName="phone" required placeholder="25288261">
         <div *ngIf="ResidentCreate.get('phone')?.hasError('required') && ResidentCreate.get('phone')?.touched"
           class="text-danger small">Phone is required</div>
       </div>
       <div class="mb-3">
         <label for="email" class="form-label">Email:</label>
-        <input type="email" class="form-control" id="email" formControlName="email" required>
+        <input type="email" class="form-control" id="email" formControlName="email" required placeholder="test@test.com">
         <div *ngIf="ResidentCreate.get('email')?.hasError('required') && ResidentCreate.get('email')?.touched"
           class="text-danger small">Email is required</div>
       </div>
       <div class="mb-3 form-check">
-        <input type="checkbox" class="form-check-input" id="isOwner" formControlName="isOwner">
+        <input type="checkbox" class="form-check-input" id="isOwner" formControlName="isOwner" >
         <label class="form-check-label" for="isOwner">Is Owner</label>
       </div>
       <div class="mb-3 form-check apartmentidclass">

@@ -62,7 +62,7 @@ export class HouseDetailComponent implements OnInit {
       (userRole: string | null) => {
         if (userRole !== null && !this.isManager) {
           const token: any = jwtDecode(userRole);
-          const houseId = token.houseid;
+          const houseId = token.apartmentid;
           this.houseService
             .GetApartmentById(houseId)
             .subscribe((apartment: Apartment) => {

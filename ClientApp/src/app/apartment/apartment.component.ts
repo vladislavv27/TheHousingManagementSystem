@@ -160,7 +160,6 @@ export class ApartmentComponent implements OnInit {
         if (accessToken !== null) {
          const formData = this.ResidentEdit.value;
           const residentIdToUpdate = formData.id;
-         
           this.houseService.UpdateResident(residentIdToUpdate, formData,accessToken).subscribe((response) => {
             this.closeModalAndRefresh();
           });

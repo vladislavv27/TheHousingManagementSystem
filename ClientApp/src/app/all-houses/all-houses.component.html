@@ -100,28 +100,28 @@
           <div class="form-group row">
             <div class="col-sm-3">
               <label for="id" class="form-label">Id</label>
-              <input type="number" class="form-control form-control-sm" id="id" formControlName="id" required>
+              <input type="number" class="form-control form-control-sm" id="id" formControlName="id" required placeholder="1" >
               <div *ngIf="HouseCreate.get('id')?.hasError('required') && HouseCreate.get('id')?.touched"
                 class="text-danger small">Id is required</div>
             </div>
 
             <div class="col-sm-3">
               <label for="number" class="form-label">Number</label>
-              <input type="number" class="form-control form-control-sm" id="number" formControlName="number" required>
+              <input type="number" class="form-control form-control-sm" id="number" formControlName="number" required placeholder="12"> 
               <div *ngIf="HouseCreate.get('number')?.hasError('required') && HouseCreate.get('number')?.touched"
                 class="text-danger small">Number is required</div>
             </div>
 
             <div class="col-sm-3">
               <label for="city" class="form-label">City</label>
-              <input type="text" class="form-control form-control-sm" id="city" formControlName="city" required>
+              <input type="text" class="form-control form-control-sm" id="city" formControlName="city" required placeholder="Jelgava">
               <div *ngIf="HouseCreate.get('city')?.hasError('required') && HouseCreate.get('city')?.touched"
                 class="text-danger small">City is required</div>
             </div>
 
             <div class="col-sm-3">
               <label for="country" class="form-label">Country</label>
-              <input type="text" class="form-control form-control-sm" id="country" formControlName="country" required>
+              <input type="text" class="form-control form-control-sm" id="country" formControlName="country" required placeholder="Latvia">
               <div *ngIf="HouseCreate.get('country')?.hasError('required') && HouseCreate.get('country')?.touched"
                 class="text-danger small">Country is required</div>
 
@@ -129,14 +129,14 @@
 
             <div class="col-sm-3">
               <label for="postcode" class="form-label">Postcode</label>
-              <input type="text" class="form-control form-control-sm" id="postcode" formControlName="postcode" required>
+              <input type="text" class="form-control form-control-sm" id="postcode" formControlName="postcode" required placeholder="lv-3007">
               <div *ngIf="HouseCreate.get('postcode')?.hasError('required') && HouseCreate.get('postcode')?.touched"
                 class="text-danger small">Postcode is required</div>
             </div>
 
             <div class="col-sm-6">
               <label for="street" class="form-label">Street</label>
-              <input type="text" class="form-control form-control-sm" id="street" formControlName="street" required>
+              <input type="text" class="form-control form-control-sm" id="street" formControlName="street" required placeholder="Pils iela 2">
               <div *ngIf="HouseCreate.get('street')?.hasError('required') && HouseCreate.get('street')?.touched"
                 class="text-danger small">Street is required</div>
             </div>

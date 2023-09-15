@@ -123,44 +123,44 @@
         <div class="form-group row">
           <div class="col-sm-3">
             <label for="id" class="form-label">Id</label>
-            <input type="number" class="form-control form-control-sm" id="id" formControlName="id">
+            <input type="number" class="form-control form-control-sm" id="id" formControlName="id" placeholder="1">
           </div>
           <div class="col-sm-3">
             <label for="number" class="form-label">Number</label>
-            <input type="number" class="form-control form-control-sm" id="number" formControlName="number" required>
+            <input type="number" class="form-control form-control-sm" id="number" formControlName="number" required placeholder="12">
             <div *ngIf="apartmentCreateForm.get('number')?.hasError('required') && apartmentCreateForm.get('number')?.touched"
               class="text-danger small">Number is required</div>
           </div>
           <div class="col-sm-3">
             <label for="floor" class="form-label">Floor</label>
-            <input type="number" class="form-control form-control-sm" id="floor" formControlName="floor" required="">
+            <input type="number" class="form-control form-control-sm" id="floor" formControlName="floor" required="" placeholder="3">
             <div *ngIf="apartmentCreateForm.get('floor')?.hasError('required') && apartmentCreateForm.get('floor')?.touched"
               class="text-danger small">Floor is required</div>
           </div>
         </div>
         <div class="col-sm-3">
           <label for="numberOfRooms" class="form-label">Number of Rooms</label>
-          <input type="number" class="form-control form-control-sm" id="numberOfRooms" formControlName="numberOfRooms">
+          <input type="number" class="form-control form-control-sm" id="numberOfRooms" formControlName="numberOfRooms" placeholder="2">
           <div
             *ngIf="apartmentCreateForm.get('numberOfRooms')?.hasError('required') && apartmentCreateForm.get('numberOfRooms')?.touched"
             class="text-danger small">Number Of Rooms is required</div>
         </div>
         <div class="col-sm-3">
           <label for="population" class="form-label">Population</label>
-          <input type="number" class="form-control form-control-sm" id="population" formControlName="population">
+          <input type="number" class="form-control form-control-sm" id="population" formControlName="population" placeholder="1">
           <div *ngIf="apartmentCreateForm.get('population')?.hasError('required') && apartmentCreateForm.get('population')?.touched"
             class="text-danger small">Population is required</div>
         </div>
         <div class="col-sm-3">
           <label for="fullArea" class="form-label">Full Area</label>
-          <input type="number" class="form-control form-control-sm" id="fullArea" formControlName="fullArea">
+          <input type="number" class="form-control form-control-sm" id="fullArea" formControlName="fullArea" placeholder="35">
           <div *ngIf="apartmentCreateForm.get('fullArea')?.hasError('required') && apartmentCreateForm.get('fullArea')?.touched"
             class="text-danger small">FullArea is required</div>
 
         </div>
         <div class="col-sm-3">
           <label for="livingSpace" class="form-label">Living Space</label>
-          <input type="number" class="form-control form-control-sm" id="livingSpace" formControlName="livingSpace">
+          <input type="number" class="form-control form-control-sm" id="livingSpace" formControlName="livingSpace" placeholder="30">
           <div
             *ngIf="apartmentCreateForm.get('livingSpace')?.hasError('required') && apartmentCreateForm.get('livingSpace')?.touched"
             class="text-danger small">living Space is required</div>
