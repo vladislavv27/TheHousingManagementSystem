@@ -14,17 +14,7 @@ export class HomesApiService {
 
   constructor(private http: HttpClient) {}
 
-  sendTokenToApi(jwtToken: any) {
-    // Define the HTTP headers with the token
-    const role = jwtToken.role;
-    const id = jwtToken.residentid; // Update this to match the property name in your request
-    const requestBody = {
-      role: role,
-      id: id
-    };
-    const apiUrl = 'https://localhost:7281/api/residents/profile'; // Replace with your API URL
-    return this.http.post(apiUrl, requestBody);
-  }
+
   getAllHouses(): Observable<House[]> {
     return this.http.get<House[]>(`${this.apiUrl}/houses`);
   }
@@ -68,23 +58,28 @@ export class HomesApiService {
   GetResidentById(id: number): Observable<Resident> {
     return this.http.get<Resident>(`${this.apiUrl}/residents/${id}`);
   }
-  DeleteResident(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/residents/${id}`);
+  //check
+  deleteResident(id: number, jwtToken: string): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${jwtToken}`);
+    console.log(headers)
+    return this.http.delete(`${this.apiUrl}/residents/${id}`, { headers });
   }
+  
   UpdateResident(idToUpdate: number, resident: Resident,jwtToken:String): Observable<any> {
     const requestBody = {
       resident: resident,
       jwtToken: jwtToken,
     };
-  
-    console.log(requestBody);
-  
+    
    return this.http.put(`${this.apiUrl}/residents/${idToUpdate}`,requestBody);
 }
 
-  CreateResident(residentcreate: Resident):Observable<Resident>{
-    residentcreate.id=0;
-    return this.http.post<Resident>(this.apiUrl+'/residents',residentcreate);
+  CreateResident(residentcreate: Resident,jtw:String):Observable<Resident>{
+    const requestBody = {
+      resident: residentcreate,
+      jwtToken: jtw,
+    }
+    return this.http.post<Resident>(this.apiUrl+'/residents',requestBody);
   }
   doesHouseExistByNumber(houseNumber: number): Observable<boolean> {
     return this.getAllHouses().pipe(map((houses) => houses.some((house) => house.number === houseNumber))

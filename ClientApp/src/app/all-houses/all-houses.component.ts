@@ -152,6 +152,8 @@ export class AllHousesComponent {
     this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
       if (userRole !== null && !this.isManager) {
         const token: any = jwtDecode(userRole);
+        console.log(token)
+
         const houseid = token.houseid;
         this.houseService.getHouseById(houseid).subscribe((house: any) => {
           this.filteredHouses = [house];

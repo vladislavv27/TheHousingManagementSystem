@@ -61,7 +61,6 @@ export class ApartmentComponent implements OnInit {
     this.initializeFormCreate();
     this.getApartments();
 
-
   }
   initializeFormEdit() {
     this.ResidentEdit = this.formBuilder.group({
@@ -170,13 +169,19 @@ export class ApartmentComponent implements OnInit {
     }
   
   onFormSubmitCreate() {
-
+    
     if (this.ResidentCreate.valid) {
-      const resident: Resident = this.ResidentCreate.value as Resident;
-      this.houseService.CreateResident(resident).subscribe(
+      this.AuthorizeService.getAccessToken().subscribe(
+        (accessToken: string | null) => {
+          if (accessToken !== null) {
+           const resdident: Resident = this.ResidentCreate.value as Resident;
+           this.houseService.CreateResident(resdident,accessToken).subscribe((response) => {
+              this.closeModalAndRefresh();
+            });
+          }
+        }
       );
-      this.closeModalAndRefresh();
-    }
+      }
   }
 
 
@@ -224,13 +229,27 @@ export class ApartmentComponent implements OnInit {
     } else {
     }
   }
-  deleteResident(residentId: number) {
 
-    this.houseService.DeleteResident(residentId).subscribe({
-      next: (response) => {
-        this.closeModalAndRefresh();
+
+
+  //check
+  deleteResident(residentId: number) {
+    this.AuthorizeService.getAccessToken().subscribe(
+      (accessToken: string | null) => {
+        if (accessToken !== null) {
+         this.houseService.deleteResident(residentId,accessToken).subscribe((response) => {
+            this.closeModalAndRefresh();
+          });
+        }
       }
-    })
+    )
+
+
+    // this.houseService.DeleteResident(residentId).subscribe({
+    //   next: (response) => {
+    //     this.closeModalAndRefresh();
+    //   }
+    // })
   }
   openConfirmationModal(): Promise<boolean> {
     const modalRef: NgbModalRef = this.modalService.open(DeleteConfirmationModalComponent);

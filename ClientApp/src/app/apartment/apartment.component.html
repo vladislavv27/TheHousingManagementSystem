@@ -118,7 +118,7 @@
     <form [formGroup]="ResidentCreate">
       <div class="mb-3">
         <label for="id" class="form-label">Id:</label>
-        <input type="text" class="form-control" id="id" formControlName="id" required placeholder="1" >
+        <input type="number" class="form-control" id="id" formControlName="id" >
         <div *ngIf="ResidentCreate.get('id')?.hasError('required') && ResidentCreate.get('id')?.touched"
           class="text-danger small">Id is required</div>
       </div>
