@@ -28,6 +28,7 @@ export class AllHousesComponent {
   filterInput: Subject<string> = new Subject<string>();
   houses: House[] = [];
   isManager: boolean = false;
+  jwtToken!:string;
   isResident: boolean = false;
   housedetails: House = {
     id: 0,
@@ -37,6 +38,7 @@ export class AllHousesComponent {
     country: '',
     postcode: '',
   }
+  accessToken!: string;
 
   constructor(private houseService: HomesApiService,
     public modalService: NgbModal,
@@ -54,10 +56,20 @@ export class AllHousesComponent {
     this.filterInput.pipe().subscribe((filterValue) => {
       this.applyFilter(filterValue);
     });
-
+    this.getAndStoreAccessToken();
   }
 
-
+  getAndStoreAccessToken() {
+    if (!this.jwtToken) {
+      this.AuthorizeService.getAccessToken().subscribe(
+        (accessToken: string | null) => {
+          if (accessToken !== null) {
+            this.jwtToken = accessToken;
+          }
+        }
+      );
+    }
+  }
 
   initializeFormEdit() {
     this.HouseEdit = this.formBuilder.group({
@@ -142,9 +154,7 @@ export class AllHousesComponent {
     if (this.HouseCreate.valid) {
       const newHouse: House = this.HouseCreate.value as House;
       this.houseService.CreateHouse(newHouse).subscribe(
-
-      );
-      this.closeModalAndRefresh();
+      );        
     }
   }
   
@@ -152,8 +162,6 @@ export class AllHousesComponent {
     this.AuthorizeService.getAccessToken().subscribe((userRole: string | null) => {
       if (userRole !== null && !this.isManager) {
         const token: any = jwtDecode(userRole);
-        console.log(token)
-
         const houseid = token.houseid;
         this.houseService.getHouseById(houseid).subscribe((house: any) => {
           this.filteredHouses = [house];

@@ -12,6 +12,7 @@ export class HomesApiService {
    private apiUrl= 'https://localhost:7281/api'
   AuthorizeService: any;
 
+
   constructor(private http: HttpClient) {}
 
 
@@ -59,9 +60,9 @@ export class HomesApiService {
   GetResidentById(id: number): Observable<Resident> {
     return this.http.get<Resident>(`${this.apiUrl}/residents/${id}`);
   }
-  //check
   deleteResident(id: number, jwtToken: string): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${jwtToken}`);
+    console.log(jwtToken)
     return this.http.delete(`${this.apiUrl}/residents/${id}`, { headers });
   }
   

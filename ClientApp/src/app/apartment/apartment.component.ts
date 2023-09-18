@@ -33,6 +33,7 @@ export class ApartmentComponent implements OnInit {
   activeModals: NgbModalRef[] = [];
   residents!: Resident[];
   currentUser: any;
+  jwtToken!: string;
 
   residentdetails: Resident = {
     id: 0,
@@ -60,6 +61,7 @@ export class ApartmentComponent implements OnInit {
     this.initializeFormEdit();
     this.initializeFormCreate();
     this.getApartments();
+    this.getAndStoreAccessToken();
 
   }
   initializeFormEdit() {
@@ -75,6 +77,18 @@ export class ApartmentComponent implements OnInit {
       apartmentId: ['']
     });
   }
+  getAndStoreAccessToken() {
+    if (!this.jwtToken) {
+      this.AuthorizeService.getAccessToken().subscribe(
+        (accessToken: string | null) => {
+          if (accessToken !== null) {
+            this.jwtToken = accessToken;
+          }
+        }
+      );
+    }
+  }
+
 
   initializeFormCreate() {
     this.ResidentCreate = this.formBuilder.group({
@@ -135,8 +149,6 @@ export class ApartmentComponent implements OnInit {
 
   }
 
-
-
   residentApartment() {
     this.route.params.subscribe(params => {
       this.apartmentId = +params['id'];
@@ -151,38 +163,33 @@ export class ApartmentComponent implements OnInit {
   }
 
 
-
   onFormSubmitEdit() {
     if (this.ResidentEdit.valid) {
-      this.AuthorizeService.getAccessToken().subscribe(
-        (accessToken: string | null) => {
-          if (accessToken !== null) {
-            const formData = this.ResidentEdit.value;
-            const residentIdToUpdate = formData.id;
-            this.houseService.UpdateResident(residentIdToUpdate, formData, accessToken).subscribe((response) => {
-              this.closeModalAndRefresh();
-            });
-          }
-        }
-      );
+
+      const formData = this.ResidentEdit.value;
+      const residentIdToUpdate = formData.id;
+      this.houseService.UpdateResident(residentIdToUpdate, formData, this.jwtToken).subscribe((response) => {
+        this.closeModalAndRefresh();
+      });
+
     }
   }
+
+
 
   onFormSubmitCreate() {
 
     if (this.ResidentCreate.valid) {
-      this.AuthorizeService.getAccessToken().subscribe(
-        (accessToken: string | null) => {
-          if (accessToken !== null) {
-            const resdident: Resident = this.ResidentCreate.value as Resident;
-            this.houseService.CreateResident(resdident, accessToken).subscribe((response) => {
-              this.closeModalAndRefresh();
-            });
-          }
-        }
-      );
+
+      const resdident: Resident = this.ResidentCreate.value as Resident;
+      this.houseService.CreateResident(resdident, this.jwtToken).subscribe((response) => {
+        this.closeModalAndRefresh();
+      });
     }
   }
+
+
+
 
 
   getApartments() {
@@ -231,15 +238,12 @@ export class ApartmentComponent implements OnInit {
 
 
   deleteResident(residentId: number) {
-    this.AuthorizeService.getAccessToken().subscribe(
-      (accessToken: string | null) => {
-        if (accessToken !== null) {
-          this.houseService.deleteResident(residentId, accessToken).subscribe((response) => {
-            this.closeModalAndRefresh();
-          });
-        }
-      }
-    )
+    this.houseService.deleteResident(residentId, this.jwtToken).subscribe((response) => {
+      this.closeModalAndRefresh();
+    });
+
+
+
   }
   openConfirmationModal(): Promise<boolean> {
     const modalRef: NgbModalRef = this.modalService.open(DeleteConfirmationModalComponent);
@@ -261,6 +265,5 @@ export class ApartmentComponent implements OnInit {
       this.router.navigate(['apartments/' + this.residentdetails.apartmentId + '/residents']))
     location.reload();
   }
-
 
 }
