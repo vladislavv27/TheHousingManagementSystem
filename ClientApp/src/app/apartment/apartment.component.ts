@@ -125,24 +125,24 @@ export class ApartmentComponent implements OnInit {
           this.houseService.GetResidentById(residentId).subscribe((resident: Resident) => {
             this.residents = [resident];
           });
-      
+
         }
-        else{
+        else {
           this.residentApartment();
         }
       }
     );
-    
+
   }
-  
-  
-  
+
+
+
   residentApartment() {
     this.route.params.subscribe(params => {
       this.apartmentId = +params['id'];
     });
     this.getApartmentsResidents(this.apartmentId);
-  
+
 
   }
   openCreateResidentModal() {
@@ -154,34 +154,34 @@ export class ApartmentComponent implements OnInit {
 
   onFormSubmitEdit() {
     if (this.ResidentEdit.valid) {
-    this.AuthorizeService.getAccessToken().subscribe(
-      (accessToken: string | null) => {
-        if (accessToken !== null) {
-         const formData = this.ResidentEdit.value;
-          const residentIdToUpdate = formData.id;
-          this.houseService.UpdateResident(residentIdToUpdate, formData,accessToken).subscribe((response) => {
-            this.closeModalAndRefresh();
-          });
-        }
-      }
-    );
-    }
-    }
-  
-  onFormSubmitCreate() {
-    
-    if (this.ResidentCreate.valid) {
       this.AuthorizeService.getAccessToken().subscribe(
         (accessToken: string | null) => {
           if (accessToken !== null) {
-           const resdident: Resident = this.ResidentCreate.value as Resident;
-           this.houseService.CreateResident(resdident,accessToken).subscribe((response) => {
+            const formData = this.ResidentEdit.value;
+            const residentIdToUpdate = formData.id;
+            this.houseService.UpdateResident(residentIdToUpdate, formData, accessToken).subscribe((response) => {
               this.closeModalAndRefresh();
             });
           }
         }
       );
-      }
+    }
+  }
+
+  onFormSubmitCreate() {
+
+    if (this.ResidentCreate.valid) {
+      this.AuthorizeService.getAccessToken().subscribe(
+        (accessToken: string | null) => {
+          if (accessToken !== null) {
+            const resdident: Resident = this.ResidentCreate.value as Resident;
+            this.houseService.CreateResident(resdident, accessToken).subscribe((response) => {
+              this.closeModalAndRefresh();
+            });
+          }
+        }
+      );
+    }
   }
 
 
@@ -212,14 +212,13 @@ export class ApartmentComponent implements OnInit {
 
         this.isManager = role === 'Manager';
         this.isResident = role === 'Resident';
-       
+
       } else {
         this.isManager = false;
         this.isResident = false;
       }
     });
   }
-
 
   async Delete() {
     const residentId = this.ResidentEdit.get('id')?.value;
@@ -231,25 +230,16 @@ export class ApartmentComponent implements OnInit {
   }
 
 
-
-  //check
   deleteResident(residentId: number) {
     this.AuthorizeService.getAccessToken().subscribe(
       (accessToken: string | null) => {
         if (accessToken !== null) {
-         this.houseService.deleteResident(residentId,accessToken).subscribe((response) => {
+          this.houseService.deleteResident(residentId, accessToken).subscribe((response) => {
             this.closeModalAndRefresh();
           });
         }
       }
     )
-
-
-    // this.houseService.DeleteResident(residentId).subscribe({
-    //   next: (response) => {
-    //     this.closeModalAndRefresh();
-    //   }
-    // })
   }
   openConfirmationModal(): Promise<boolean> {
     const modalRef: NgbModalRef = this.modalService.open(DeleteConfirmationModalComponent);

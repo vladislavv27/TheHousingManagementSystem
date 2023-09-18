@@ -22,6 +22,7 @@ export class HomesApiService {
     return this.http.get<House>(`${this.apiUrl}/houses/${id}`);
   }
   getAllApartments(): Observable<Apartment[]> {
+
     return this.http.get<Apartment[]>(`${this.apiUrl}/apartments`);
   }
   
@@ -61,25 +62,20 @@ export class HomesApiService {
   //check
   deleteResident(id: number, jwtToken: string): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${jwtToken}`);
-    console.log(headers)
     return this.http.delete(`${this.apiUrl}/residents/${id}`, { headers });
   }
   
   UpdateResident(idToUpdate: number, resident: Resident,jwtToken:String): Observable<any> {
-    const requestBody = {
-      resident: resident,
-      jwtToken: jwtToken,
-    };
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${jwtToken}`);
+
     
-   return this.http.put(`${this.apiUrl}/residents/${idToUpdate}`,requestBody);
+   return this.http.put(`${this.apiUrl}/residents/${idToUpdate}`,resident,{headers});
 }
 
   CreateResident(residentcreate: Resident,jtw:String):Observable<Resident>{
-    const requestBody = {
-      resident: residentcreate,
-      jwtToken: jtw,
-    }
-    return this.http.post<Resident>(this.apiUrl+'/residents',requestBody);
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${jtw}`);
+
+    return this.http.post<Resident>(this.apiUrl+'/residents',residentcreate,{headers});
   }
   doesHouseExistByNumber(houseNumber: number): Observable<boolean> {
     return this.getAllHouses().pipe(map((houses) => houses.some((house) => house.number === houseNumber))
